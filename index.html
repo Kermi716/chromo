@@ -1,0 +1,638 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>Chromo - Official reseller of AI assistants</title>
+    <link rel="icon" type="image/x-icon" href="assets/logo/favico/favicon.ico">
+    <link rel="icon" type="image/png" sizes="32x32" href="assets/logo/favico/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="assets/logo/favico/favicon-16x16.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="assets/logo/favico/apple-touch-icon.png">
+    <link rel="manifest" href="assets/logo/favico/site.webmanifest">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/main.css">
+    <script src="js/security.js"></script>
+</head>
+
+<body>
+    <div class="bg-doodles" aria-hidden="true">
+        <svg class="bg-doodle bg-doodle--1" viewBox="0 0 600 360" fill="none">
+            <path d="M -60 140 C 60 180, 130 280, 210 260 C 270 240, 310 170, 280 90 C 250 20, 180 40, 195 120 C 205 180, 260 210, 320 200 C 400 180, 480 90, 560 60 C 610 40, 640 20, 680 -30"></path>
+        </svg>
+        <svg class="bg-doodle bg-doodle--2" viewBox="0 0 600 400" fill="none">
+            <path d="M 380 -60 C 360 40, 320 110, 250 130 C 180 150, 140 220, 170 280 C 200 330, 280 320, 295 250 C 310 190, 250 160, 210 180 C 160 200, 140 260, 170 320 C 200 380, 280 410, 380 390 C 470 370, 560 330, 680 290"></path>
+        </svg>
+        <svg class="bg-doodle bg-doodle--3" viewBox="0 0 800 360" fill="none">
+            <path d="M -60 260 C 50 240, 110 180, 160 120 C 195 80, 235 35, 215 12 C 190 -10, 145 10, 155 60 C 165 110, 215 140, 270 150 C 350 165, 420 185, 490 155 C 535 130, 580 75, 605 45 C 630 12, 590 -10, 565 12 C 535 38, 550 98, 590 128 C 650 168, 730 250, 880 310"></path>
+        </svg>
+    </div>
+    <header class="header">
+        <div class="container header__inner">
+            <a href="./" class="header__logo">Chromo</a>
+
+            <nav class="header__nav" id="mainNav">
+                <a href="./" class="header__nav-link header__nav-link--active" id="navHome">
+                    <svg class="header__nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+                        <polyline points="9 22 9 12 15 12 15 22"></polyline>
+                    </svg>
+                    <span>Home</span>
+                </a>
+                <a href="chat/" class="header__nav-link">
+                    <svg class="header__nav-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M14 8c0 3.314-2.686 6-6 6a5.9 5.9 0 01-2.8-.7L2 14l.7-3.2A5.9 5.9 0 012 8c0-3.314 2.686-6 6-6s6 2.686 6 6z"></path>
+                    </svg>
+                    <span>Chat</span>
+                </a>
+                <a href="#products" class="header__nav-link" id="navProducts">
+                    <svg class="header__nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                        <polygon points="12 2 2 7 12 12 22 7 12 2"></polygon>
+                        <polyline points="2 17 12 22 22 17"></polyline>
+                        <polyline points="2 12 12 17 22 12"></polyline>
+                    </svg>
+                    <span>Products</span>
+                </a>
+                <a href="#about" class="header__nav-link" id="navAbout">
+                    <svg class="header__nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                        <circle cx="9" cy="7" r="4"></circle>
+                        <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+                        <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+                    </svg>
+                    <span>About Us</span>
+                </a>
+            </nav>
+
+            <div class="header__actions">
+                <div class="header__account-wrapper">
+                    <a href="reg/" class="header__account" id="headerAccountBtn" aria-label="Sign in or register"
+                        title="Sign in or register">
+                        <img src="assets/pictures/acc.png" alt="Account" class="header__account-icon">
+                        <div class="header__account-avatar" id="headerUserAvatar">U</div>
+                    </a>
+                    <div class="account-popover" id="accountPopover" role="dialog" aria-hidden="true">
+                        <div class="account-popover__header">
+                            <div class="account-popover__avatar" id="accountAvatar">U</div>
+                            <div class="account-popover__info">
+                                <span class="account-popover__name" id="accountUserName">User</span>
+                                <div class="account-popover__sub" id="accountUserTier">
+                                    <span class="account-popover__sub-label">Subscription:</span>
+                                    <span class="account-popover__sub-val" id="accountUserPlan">Free</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="account-popover__limits-preview" id="accountLimitsPreview">
+                            <div class="account-popover__limits-row">
+                                <span class="account-popover__limits-title">Daily Limit</span>
+                                <span class="account-popover__limits-stat" id="popoverLimitsStat">0 / 5</span>
+                            </div>
+                            <div class="account-popover__limits-track">
+                                <div class="account-popover__limits-bar" id="popoverLimitsBar" style="width: 0%;"></div>
+                            </div>
+                        </div>
+                        <div class="account-popover__divider"></div>
+                        <button type="button" class="account-popover__signout" id="signOutBtn">
+                            <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" class="account-popover__signout-icon">
+                                <path d="M7.5 17.5H4.16667C3.72464 17.5 3.30072 17.3244 2.98816 17.0118C2.67559 16.6993 2.5 16.2754 2.5 15.8333V4.16667C2.5 3.72464 2.67559 3.30072 2.98816 2.98816C3.30072 2.67559 3.72464 2.5 4.16667 2.5H7.5"></path>
+                                <path d="M13.3333 14.1667L17.5 10L13.3333 5.83333"></path>
+                                <path d="M17.5 10H7.5"></path>
+                            </svg>
+                            <span>Sign Out</span>
+                        </button>
+                    </div>
+                </div>
+                <button type="button" class="header__burger" id="burgerBtn" aria-label="Toggle navigation"
+                    aria-expanded="false">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <main class="main">
+        <div class="container main__inner">
+            <section class="hero">
+                <h1 class="hero__title">
+                    <span class="hero__text" id="heroText"></span><span class="hero__cursor" aria-hidden="true"></span>
+                </h1>
+                <div class="hero__smile" id="heroSmile" aria-hidden="true">
+                    <svg viewBox="0 0 64 44" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M 12 10 C 10 36, 54 36, 52 10" class="smile-curve"></path>
+                    </svg>
+                </div>
+
+                <form class="hero__chat-bar" id="chatBar" onsubmit="event.preventDefault()">
+                    <div class="hero__attachments" id="attachmentsList"></div>
+
+                    <div class="hero__chat-top">
+                        <textarea class="hero__chat-input" id="chatInput" placeholder="Message Gemini 3.8 Flash..."
+                            rows="1" autocomplete="off"></textarea>
+                    </div>
+
+                    <div class="hero__chat-bottom">
+                        <div class="hero__chat-tools">
+                            <label class="hero__tool-btn" id="attachBtn" title="Attach file" aria-label="Attach file">
+                                <img src="assets/pictures/sk.png" alt="Attach">
+                                <input type="file" id="fileInput" accept="image/*" multiple hidden>
+                            </label>
+
+                            <button type="button" class="hero__tool-btn hero__tool-btn--voice" id="voiceRecordBtn" title="Voice dictation" aria-label="Voice dictation">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" class="hero__tool-icon">
+                                    <path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3z"></path>
+                                    <path d="M19 10v2a7 7 0 0 1-14 0v-2"></path>
+                                    <line x1="12" y1="19" x2="12" y2="22"></line>
+                                </svg>
+                            </button>
+
+                            <div class="model-select" id="modelSelect">
+                                <button type="button" class="model-select__btn" id="modelBtn" aria-haspopup="listbox"
+                                    aria-expanded="false">
+                                    <span class="model-select__label" id="currentModel">Gemini 3.8 Flash</span>
+                                    <img src="assets/pictures/st.png" alt="" class="model-select__arrow">
+                                </button>
+                                <div class="model-select__menu" id="modelMenu" role="listbox">
+                                    <button type="button" class="model-select__item" data-model="Gemini 4.0">Gemini
+                                        4.0</button>
+                                    <button type="button" class="model-select__item is-selected"
+                                        data-model="Gemini 3.8 Flash">Gemini 3.8 Flash</button>
+                                    <button type="button" class="model-select__item"
+                                        data-model="Claude 5.5 Opus">Claude 5.5 Opus</button>
+                                    <button type="button" class="model-select__item"
+                                        data-model="Claude 5.1 Fable">Claude 5.1 Fable</button>
+                                    <button type="button" class="model-select__item"
+                                        data-model="Claude 5.5 Sonet">Claude 5.5 Sonet</button>
+                                    <button type="button" class="model-select__item"
+                                        data-model="Chat GPT Astra 6.1">Chat GPT Astra 6.1</button>
+                                    <button type="button" class="model-select__item" data-model="Chat GPT Sol 5.6">Chat
+                                        GPT Sol 5.6</button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <button type="submit" class="hero__chat-btn" id="sendBtn" aria-label="Send message">
+                            <svg viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M10 15V5M10 5L5.5 9.5M10 5L14.5 9.5" stroke="currentColor" stroke-width="2"
+                                    stroke-linecap="round" stroke-linejoin="round" />
+                            </svg>
+                        </button>
+                    </div>
+
+                    <div class="hero__voice-panel" id="voicePanel" style="display: none;">
+                        <div class="hero__voice-panel-status">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" class="hero__voice-panel-icon">
+                                <path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3z"></path>
+                                <path d="M19 10v2a7 7 0 0 1-14 0v-2"></path>
+                                <line x1="12" y1="19" x2="12" y2="22"></line>
+                            </svg>
+                            <span class="hero__voice-panel-timer" id="voiceTimer">00:00</span>
+                        </div>
+                        <div class="hero__voice-panel-wave" id="voiceWave">
+                            <span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span>
+                        </div>
+                        <div class="hero__voice-panel-actions">
+                            <button type="button" class="hero__voice-panel-btn hero__voice-panel-btn--cancel" id="voiceCancelBtn" title="Cancel recording" aria-label="Cancel recording">
+                                <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M5 5l10 10M15 5L5 15"></path>
+                                </svg>
+                            </button>
+                            <button type="button" class="hero__voice-panel-btn hero__voice-panel-btn--done" id="voiceDoneBtn" title="Finish recording" aria-label="Finish recording">
+                                <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                                    <polyline points="4 10.5 8 14.5 16 6.5"></polyline>
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="hero__drop-overlay" id="dropOverlay">
+                        <img src="assets/pictures/sk.png" alt="" class="hero__drop-icon">
+                        <span class="hero__drop-text">Drop image to add</span>
+                    </div>
+                </form>
+            </section>
+
+            <section class="products" id="products">
+                <h2 class="products__title">Products</h2>
+
+                <div class="products__grid">
+                    <div class="product-card">
+                        <div class="product-card__header">
+                            <span class="product-card__term">1 Month</span>
+                            <h3 class="product-card__name">Spark</h3>
+                            <div class="product-card__price">
+                                <span class="product-card__amount">$10</span>
+                                <span class="product-card__period">/ month</span>
+                            </div>
+                        </div>
+
+                        <ul class="product-card__features">
+                            <li>
+                                <svg viewBox="0 0 16 16" fill="currentColor">
+                                    <path
+                                        d="M13.78 4.22a.75.75 0 010 1.06l-7.25 7.25a.75.75 0 01-1.06 0L2.22 9.28a.75.75 0 011.06-1.06L6 10.94l6.72-6.72a.75.75 0 011.06 0z" />
+                                </svg>
+                                <span>Gemini 4.0 & 3.8 Flash</span>
+                            </li>
+                            <li>
+                                <svg viewBox="0 0 16 16" fill="currentColor">
+                                    <path
+                                        d="M13.78 4.22a.75.75 0 010 1.06l-7.25 7.25a.75.75 0 01-1.06 0L2.22 9.28a.75.75 0 011.06-1.06L6 10.94l6.72-6.72a.75.75 0 011.06 0z" />
+                                </svg>
+                                <span>Chat GPT Sol 5.6</span>
+                            </li>
+                            <li>
+                                <svg viewBox="0 0 16 16" fill="currentColor">
+                                    <path
+                                        d="M13.78 4.22a.75.75 0 010 1.06l-7.25 7.25a.75.75 0 01-1.06 0L2.22 9.28a.75.75 0 011.06-1.06L6 10.94l6.72-6.72a.75.75 0 011.06 0z" />
+                                </svg>
+                                <span>Standard response speed</span>
+                            </li>
+                            <li>
+                                <svg viewBox="0 0 16 16" fill="currentColor">
+                                    <path
+                                        d="M13.78 4.22a.75.75 0 010 1.06l-7.25 7.25a.75.75 0 01-1.06 0L2.22 9.28a.75.75 0 011.06-1.06L6 10.94l6.72-6.72a.75.75 0 011.06 0z" />
+                                </svg>
+                                <span>Image attachments</span>
+                            </li>
+                        </ul>
+
+                        <button type="button" class="product-card__btn" data-name="Spark" data-term="1 Month"
+                            data-price="$10" data-period="/ month">Purchase</button>
+                    </div>
+
+                    <div class="product-card">
+                        <div class="product-card__header">
+                            <span class="product-card__term">6 Months</span>
+                            <h3 class="product-card__name">Pulse</h3>
+                            <div class="product-card__price">
+                                <span class="product-card__amount">$48</span>
+                                <span class="product-card__period">/ 6 months</span>
+                            </div>
+                        </div>
+
+                        <ul class="product-card__features">
+                            <li>
+                                <svg viewBox="0 0 16 16" fill="currentColor">
+                                    <path
+                                        d="M13.78 4.22a.75.75 0 010 1.06l-7.25 7.25a.75.75 0 01-1.06 0L2.22 9.28a.75.75 0 011.06-1.06L6 10.94l6.72-6.72a.75.75 0 011.06 0z" />
+                                </svg>
+                                <span>All AI models included</span>
+                            </li>
+                            <li>
+                                <svg viewBox="0 0 16 16" fill="currentColor">
+                                    <path
+                                        d="M13.78 4.22a.75.75 0 010 1.06l-7.25 7.25a.75.75 0 01-1.06 0L2.22 9.28a.75.75 0 011.06-1.06L6 10.94l6.72-6.72a.75.75 0 011.06 0z" />
+                                </svg>
+                                <span>Standard limits on Claude & GPT 6.1</span>
+                            </li>
+                            <li>
+                                <svg viewBox="0 0 16 16" fill="currentColor">
+                                    <path
+                                        d="M13.78 4.22a.75.75 0 010 1.06l-7.25 7.25a.75.75 0 01-1.06 0L2.22 9.28a.75.75 0 011.06-1.06L6 10.94l6.72-6.72a.75.75 0 011.06 0z" />
+                                </svg>
+                                <span>High-priority response rate</span>
+                            </li>
+                            <li>
+                                <svg viewBox="0 0 16 16" fill="currentColor">
+                                    <path
+                                        d="M13.78 4.22a.75.75 0 010 1.06l-7.25 7.25a.75.75 0 01-1.06 0L2.22 9.28a.75.75 0 011.06-1.06L6 10.94l6.72-6.72a.75.75 0 011.06 0z" />
+                                </svg>
+                                <span>Multi-file attachments</span>
+                            </li>
+                        </ul>
+
+                        <button type="button" class="product-card__btn" data-name="Pulse" data-term="6 Months"
+                            data-price="$48" data-period="/ 6 months">Purchase</button>
+                    </div>
+
+                    <div class="product-card product-card--featured">
+                        <div class="product-card__header">
+                            <span class="product-card__term product-card__term--dark">No Limits</span>
+                            <h3 class="product-card__name">Nova</h3>
+                            <div class="product-card__price">
+                                <span class="product-card__amount">$89</span>
+                                <span class="product-card__period">/ 12 months</span>
+                            </div>
+                        </div>
+
+                        <ul class="product-card__features">
+                            <li>
+                                <svg viewBox="0 0 16 16" fill="currentColor">
+                                    <path
+                                        d="M13.78 4.22a.75.75 0 010 1.06l-7.25 7.25a.75.75 0 01-1.06 0L2.22 9.28a.75.75 0 011.06-1.06L6 10.94l6.72-6.72a.75.75 0 011.06 0z" />
+                                </svg>
+                                <span>All AI models with zero limits</span>
+                            </li>
+                            <li>
+                                <svg viewBox="0 0 16 16" fill="currentColor">
+                                    <path
+                                        d="M13.78 4.22a.75.75 0 010 1.06l-7.25 7.25a.75.75 0 01-1.06 0L2.22 9.28a.75.75 0 011.06-1.06L6 10.94l6.72-6.72a.75.75 0 011.06 0z" />
+                                </svg>
+                                <span>Unlimited Claude & GPT 6.1</span>
+                            </li>
+                            <li>
+                                <svg viewBox="0 0 16 16" fill="currentColor">
+                                    <path
+                                        d="M13.78 4.22a.75.75 0 010 1.06l-7.25 7.25a.75.75 0 01-1.06 0L2.22 9.28a.75.75 0 011.06-1.06L6 10.94l6.72-6.72a.75.75 0 011.06 0z" />
+                                </svg>
+                                <span>Maximum priority processing</span>
+                            </li>
+                            <li>
+                                <svg viewBox="0 0 16 16" fill="currentColor">
+                                    <path
+                                        d="M13.78 4.22a.75.75 0 010 1.06l-7.25 7.25a.75.75 0 01-1.06 0L2.22 9.28a.75.75 0 011.06-1.06L6 10.94l6.72-6.72a.75.75 0 011.06 0z" />
+                                </svg>
+                                <span>Early access to upcoming models</span>
+                            </li>
+                        </ul>
+
+                        <button type="button" class="product-card__btn product-card__btn--dark" data-name="Nova"
+                            data-term="No Limits" data-price="$89" data-period="/ 12 months">Purchase</button>
+                    </div>
+                </div>
+            </section>
+
+            <section class="about" id="about">
+                <div class="about__header">
+                    <span class="about__tag">Corporate Profile</span>
+                    <h2 class="about__title">About Chromo LTD</h2>
+                    <p class="about__lead">
+                        Founded in early 2023, Chromo LTD is an independent artificial intelligence distribution company
+                        based in the United Kingdom. For more than 3 years, we have provided seamless, unified access to
+                        premier frontier intelligence.
+                    </p>
+                </div>
+
+                <div class="about__showcase">
+                    <div class="about-card about-card--story">
+                        <div class="about-card__badge">Company Story</div>
+                        <h3 class="about-card__heading">Direct access to leading AI models for over 3 years</h3>
+                        <p class="about-card__desc">
+                            Chromo was established to solve model fragmentation. Rather than managing separate
+                            subscriptions and restrictive rate limits across multiple vendors, our infrastructure
+                            unifies the world's most capable neural networks into a single, cohesive workspace.
+                        </p>
+                        <p class="about-card__desc">
+                            From our initial beta in 2023 to our current high-throughput platform, we have connected
+                            researchers, engineers, and creators to frontier models including Claude 5.5, Gemini 4.0,
+                            and GPT Astra with zero prompt retention and private throughput.
+                        </p>
+
+                        <div class="about__metrics">
+                            <div class="about__metric">
+                                <span class="about__metric-num">3+</span>
+                                <span class="about__metric-txt">Years Active</span>
+                            </div>
+                            <div class="about__metric">
+                                <span class="about__metric-num">140+</span>
+                                <span class="about__metric-txt">Countries</span>
+                            </div>
+                            <div class="about__metric">
+                                <span class="about__metric-num">7</span>
+                                <span class="about__metric-txt">Flagship Models</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="about-card about-card--registry">
+                        <div class="about-card__badge">Corporate Registry</div>
+                        <h3 class="about-card__heading">Official Entity Details</h3>
+
+                        <dl class="about-registry">
+                            <div class="about-registry__item">
+                                <dt>Legal Name</dt>
+                                <dd>Chromo LTD</dd>
+                            </div>
+                            <div class="about-registry__item">
+                                <dt>Company Number</dt>
+                                <dd>14839201</dd>
+                            </div>
+                            <div class="about-registry__item">
+                                <dt>Incorporation Date</dt>
+                                <dd>March 14, 2023</dd>
+                            </div>
+                            <div class="about-registry__item">
+                                <dt>Jurisdiction</dt>
+                                <dd>England &amp; Wales, UK</dd>
+                            </div>
+                            <div class="about-registry__item">
+                                <dt>Headquarters</dt>
+                                <dd>85 Great Portland St, 1st Floor, London, W1W 7LT, UK</dd>
+                            </div>
+                            <div class="about-registry__item">
+                                <dt>Edge Infrastructure</dt>
+                                <dd>London (LHR), Frankfurt (FRA), Ashburn (IAD)</dd>
+                            </div>
+                            <div class="about-registry__item">
+                                <dt>Data Privacy Standard</dt>
+                                <dd>Zero Prompt Retention &amp; In-Flight Processing</dd>
+                            </div>
+                            <div class="about-registry__item">
+                                <dt>Corporate Inquiries</dt>
+                                <dd>corporate@chromo.ai</dd>
+                            </div>
+                        </dl>
+                    </div>
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <div class="modal" id="checkoutModal" aria-hidden="true">
+        <div class="modal__backdrop" id="modalBackdrop"></div>
+        <div class="modal__dialog" role="dialog" aria-modal="true">
+            <button type="button" class="modal__close" id="modalClose" aria-label="Close modal">
+                <img src="assets/pictures/kr.png" alt="Close">
+            </button>
+            <div class="modal__header">
+                <span class="modal__term" id="modalPlanTerm">1 Month</span>
+                <h3 class="modal__name" id="modalPlanName">Spark</h3>
+                <div class="modal__price">
+                    <span class="modal__amount" id="modalPlanPrice">$10</span>
+                    <span class="modal__period" id="modalPlanPeriod">/ month</span>
+                </div>
+            </div>
+            <div class="modal__summary">
+                <div class="modal__row">
+                    <span>Plan</span>
+                    <strong id="modalSummaryName">Spark</strong>
+                </div>
+                <div class="modal__row">
+                    <span>Duration</span>
+                    <strong id="modalSummaryTerm">1 Month</strong>
+                </div>
+                <div class="modal__row modal__row--total">
+                    <span>Total</span>
+                    <strong id="modalSummaryTotal">$10</strong>
+                </div>
+            </div>
+            <button type="button" class="modal__submit" id="checkoutSubmit">Pay Now</button>
+        </div>
+    </div>
+
+    <div class="modal" id="authModal" aria-hidden="true">
+        <div class="modal__backdrop" id="authModalBackdrop"></div>
+        <div class="modal__dialog auth-req-dialog" role="dialog" aria-modal="true">
+            <button type="button" class="modal__close" id="authModalClose" aria-label="Close modal">
+                <img src="assets/pictures/kr.png" alt="Close">
+            </button>
+            <span class="auth-req-dialog__badge">Authentication Required</span>
+            <h3 class="auth-req-dialog__title" id="authModalTitle">Sign in to continue</h3>
+            <p class="auth-req-dialog__desc" id="authModalDesc">
+                An active Chromo account is required to access frontier neural networks and purchase subscriptions.
+            </p>
+            <div class="auth-req-dialog__actions">
+                <a href="reg/" class="auth-req-dialog__btn-primary" id="authModalPrimaryBtn">Sign In or Register</a>
+                <button type="button" class="auth-req-dialog__btn-secondary" id="authModalCancelBtn">Cancel</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal" id="legalModal" aria-hidden="true">
+        <div class="modal__backdrop" id="legalModalBackdrop"></div>
+        <div class="modal__dialog legal-dialog" role="dialog" aria-modal="true">
+            <button type="button" class="modal__close" id="legalModalClose" aria-label="Close modal">
+                <img src="assets/pictures/kr.png" alt="Close">
+            </button>
+            <div class="legal-dialog__header">
+                <span class="legal-dialog__badge">Legal Documentation</span>
+                <h3 class="legal-dialog__title">Terms &amp; Privacy</h3>
+            </div>
+            <div class="legal-dialog__tabs" role="tablist">
+                <button type="button" class="legal-dialog__tab is-active" id="tabPrivacy" role="tab" aria-selected="true" aria-controls="panelPrivacy">Privacy Policy</button>
+                <button type="button" class="legal-dialog__tab" id="tabTerms" role="tab" aria-selected="false" aria-controls="panelTerms">Terms of Service</button>
+            </div>
+
+            <div class="legal-dialog__content">
+                <div class="legal-dialog__panel is-active" id="panelPrivacy" role="tabpanel" aria-labelledby="tabPrivacy">
+                    <h4>Zero Training Retention</h4>
+                    <p>
+                        Chromo LTD maintains strict data isolation. We do not store, log, or use any prompts, chat histories, code snippets, or attached files to train or tune future neural models.
+                    </p>
+                    <h4>In-Flight Memory Processing</h4>
+                    <p>
+                        All user inputs are processed strictly in volatile memory and encrypted using TLS 1.3 in transit. Upon token streaming completion, your session data is cleared from intermediate routing servers.
+                    </p>
+                    <h4>Account Credential Protection</h4>
+                    <p>
+                        User accounts are protected through salted cryptographic hashes. We never share account identifiers or subscription details with third-party advertisers.
+                    </p>
+                    <h4>Data Subject Rights</h4>
+                    <p>
+                        Under UK and EU GDPR, you retain the full right to request complete account deletion and data export at any time by contacting privacy@chromo.ai.
+                    </p>
+                </div>
+
+                <div class="legal-dialog__panel" id="panelTerms" role="tabpanel" aria-labelledby="tabTerms">
+                    <h4>Subscription Activation</h4>
+                    <p>
+                        Access to Spark, Pulse, and Nova subscription plans is granted immediately upon successful payment verification and remains valid for the selected calendar duration.
+                    </p>
+                    <h4>Fair Usage Standards</h4>
+                    <p>
+                        Users agree to utilize Chromo compute capabilities within reasonable non-automated usage parameters and refrain from deploying automated scrapers, denial-of-service traffic, or malicious payload generation.
+                    </p>
+                    <h4>Model Availability</h4>
+                    <p>
+                        Chromo acts as a high-speed routing gateway to third-party foundation models. While we guarantee high-priority allocation, individual model availability is aligned with underlying upstream provider operations.
+                    </p>
+                    <h4>Transparent Billing</h4>
+                    <p>
+                        Plans do not contain hidden recurring fees or auto-escalating tariffs. Subscriptions simply conclude at the end of the chosen timeframe unless manually renewed by the account holder.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer class="footer">
+        <div class="container footer__container">
+            <div class="footer__top">
+                <div class="footer__brand">
+                    <a href="./" class="footer__logo">Chromo</a>
+                    <p class="footer__tagline">
+                        Unified gateway to premier frontier artificial intelligence. Direct model distribution since 2023.
+                    </p>
+                    <div class="footer__company-badge">Chromo LTD &bull; London, UK</div>
+                </div>
+
+                <div class="footer__nav-group">
+                    <div class="footer__col">
+                        <span class="footer__col-title">Models</span>
+                        <ul class="footer__links">
+                            <li><a href="#chatBar">Claude 5.5 Opus</a></li>
+                            <li><a href="#chatBar">Claude 5.1 Fable</a></li>
+                            <li><a href="#chatBar">Claude 5.5 Sonet</a></li>
+                            <li><a href="#chatBar">Gemini 4.0</a></li>
+                            <li><a href="#chatBar">Chat GPT Astra 6.1</a></li>
+                            <li><a href="#chatBar">Chat GPT Sol 5.6</a></li>
+                        </ul>
+                    </div>
+
+                    <div class="footer__col">
+                        <span class="footer__col-title">Subscriptions</span>
+                        <ul class="footer__links">
+                            <li><a href="#products">Spark ($10/mo)</a></li>
+                            <li><a href="#products">Pulse ($48/6mo)</a></li>
+                            <li><a href="#products">Nova (No Limits)</a></li>
+                            <li><a href="reg/">Account Portal</a></li>
+                        </ul>
+                    </div>
+
+                    <div class="footer__col">
+                        <span class="footer__col-title">Legal &amp; Trust</span>
+                        <ul class="footer__links">
+                            <li><a href="#privacy" id="linkPrivacy">Privacy Policy</a></li>
+                            <li><a href="#terms" id="linkTerms">Terms of Service</a></li>
+                            <li><a href="#privacy" id="linkSecurity">Data Security</a></li>
+                            <li><a href="#terms" id="linkCookies">Cookie Policy</a></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <div class="footer__bottom">
+                <span class="footer__copy">&copy; 2026 Chromo LTD. All rights reserved.</span>
+                <div class="footer__bottom-links">
+                    <a href="#privacy" class="footer__legal-link" id="legalPrivacy">Privacy</a>
+                    <span class="footer__dot">&bull;</span>
+                    <a href="#terms" class="footer__legal-link" id="legalTerms">Terms</a>
+                    <span class="footer__dot">&bull;</span>
+                    <a href="#about" class="footer__legal-link">Corporate Registry</a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <div class="chat-center-toast" id="centerToast" role="alert" aria-live="assertive">
+        <div class="chat-center-toast__dialog">
+            <div class="chat-center-toast__icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                    stroke-linejoin="round">
+                    <circle cx="12" cy="12" r="10"></circle>
+                    <line x1="12" y1="8" x2="12" y2="12"></line>
+                    <line x1="12" y1="16" x2="12.01" y2="16"></line>
+                </svg>
+            </div>
+            <div class="chat-center-toast__content">
+                <div class="chat-center-toast__title" id="centerToastTitle">Notification</div>
+                <div class="chat-center-toast__desc" id="centerToastDesc"></div>
+            </div>
+            <button type="button" class="chat-center-toast__close" id="centerToastClose" aria-label="Dismiss notification">
+                <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                    stroke-linejoin="round">
+                    <line x1="5" y1="5" x2="15" y2="15"></line>
+                    <line x1="15" y1="5" x2="5" y2="15"></line>
+                </svg>
+            </button>
+        </div>
+    </div>
+
+    <script src="js/main.js"></script>
+</body>
+
+</html>

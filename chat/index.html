@@ -1,0 +1,415 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>Chromo Chat</title>
+    <link rel="icon" type="image/x-icon" href="../assets/logo/favico/favicon.ico">
+    <link rel="icon" type="image/png" sizes="32x32" href="../assets/logo/favico/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="../assets/logo/favico/favicon-16x16.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="../assets/logo/favico/apple-touch-icon.png">
+    <link rel="manifest" href="../assets/logo/favico/site.webmanifest">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../css/main.css">
+    <link rel="stylesheet" href="../css/chat.css">
+    <script src="../js/security.js"></script>
+</head>
+
+<body class="chat-page">
+    <header class="header chat-header">
+        <div class="chat-header__inner">
+            <div class="chat-header__left">
+                <a href="../" class="header__logo">Chromo</a>
+            </div>
+
+            <div class="chat-header__right">
+                <nav class="chat-header__nav" id="mainNav">
+                    <a href="../" class="header__nav-link">
+                        <svg class="header__nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+                            <polyline points="9 22 9 12 15 12 15 22"></polyline>
+                        </svg>
+                        <span>Home</span>
+                    </a>
+                    <a href="./" class="header__nav-link header__nav-link--active">
+                        <svg class="header__nav-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M14 8c0 3.314-2.686 6-6 6a5.9 5.9 0 01-2.8-.7L2 14l.7-3.2A5.9 5.9 0 012 8c0-3.314 2.686-6 6-6s6 2.686 6 6z"></path>
+                        </svg>
+                        <span>Chat</span>
+                    </a>
+                    <a href="../#products" class="header__nav-link">
+                        <svg class="header__nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                            <polygon points="12 2 2 7 12 12 22 7 12 2"></polygon>
+                            <polyline points="2 17 12 22 22 17"></polyline>
+                            <polyline points="2 12 12 17 22 12"></polyline>
+                        </svg>
+                        <span>Products</span>
+                    </a>
+                    <a href="../#about" class="header__nav-link">
+                        <svg class="header__nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                            <circle cx="9" cy="7" r="4"></circle>
+                            <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+                            <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+                        </svg>
+                        <span>About Us</span>
+                    </a>
+                </nav>
+
+                <div class="header__actions">
+                    <div class="header__account-wrapper">
+                        <a href="../reg/" class="header__account" id="headerAccountBtn"
+                            aria-label="Sign in or register" title="Sign in or register">
+                            <img src="../assets/pictures/acc.png" alt="Account" class="header__account-icon">
+                            <div class="header__account-avatar" id="headerUserAvatar">U</div>
+                        </a>
+                        <div class="account-popover" id="accountPopover" role="dialog" aria-hidden="true">
+                            <div class="account-popover__header">
+                                <div class="account-popover__avatar" id="accountAvatar">U</div>
+                                <div class="account-popover__info">
+                                    <span class="account-popover__name" id="accountUserName">User</span>
+                                    <div class="account-popover__sub" id="accountUserTier">
+                                        <span class="account-popover__sub-label">Subscription:</span>
+                                        <span class="account-popover__sub-val" id="accountUserPlan">Free</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="account-popover__limits-preview" id="accountLimitsPreview">
+                                <div class="account-popover__limits-row">
+                                    <span class="account-popover__limits-title">Daily Limit</span>
+                                    <span class="account-popover__limits-stat" id="popoverLimitsStat">0 / 5</span>
+                                </div>
+                                <div class="account-popover__limits-track">
+                                    <div class="account-popover__limits-bar" id="popoverLimitsBar" style="width: 0%;"></div>
+                                </div>
+                            </div>
+                            <div class="account-popover__divider"></div>
+                            <button type="button" class="account-popover__signout" id="signOutBtn">
+                                <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8"
+                                    stroke-linecap="round" stroke-linejoin="round"
+                                    class="account-popover__signout-icon">
+                                    <path
+                                        d="M7.5 17.5H4.16667C3.72464 17.5 3.30072 17.3244 2.98816 17.0118C2.67559 16.6993 2.5 16.2754 2.5 15.8333V4.16667C2.5 3.72464 2.67559 3.30072 2.98816 2.98816C3.30072 2.67559 3.72464 2.5 4.16667 2.5H7.5">
+                                    </path>
+                                    <path d="M13.3333 14.1667L17.5 10L13.3333 5.83333"></path>
+                                    <path d="M17.5 10H7.5"></path>
+                                </svg>
+                                <span>Sign Out</span>
+                            </button>
+                        </div>
+                    </div>
+                    <button type="button" class="header__burger" id="burgerBtn" aria-label="Toggle navigation"
+                        aria-expanded="false">
+                        <span></span>
+                        <span></span>
+                        <span></span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <div class="chat-app">
+        <aside class="chat-sidebar" id="chatSidebar">
+            <div class="chat-sidebar__header">
+                <div class="chat-sidebar__title-wrap">
+                    <img src="../assets/pictures/ch.png" alt="" class="chat-sidebar__icon">
+                    <span class="chat-sidebar__title">Workspace</span>
+                </div>
+                <button type="button" class="chat-sidebar__collapse-btn" id="sidebarCollapseBtn" aria-label="Collapse sidebar" title="Collapse sidebar">
+                    <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" class="chat-sidebar__toggle-icon">
+                        <rect x="3" y="3" width="14" height="14" rx="2.5"></rect>
+                        <path d="M8 3v14"></path>
+                        <path d="M12 7.5l-2.5 2.5 2.5 2.5"></path>
+                    </svg>
+                </button>
+            </div>
+
+            <div class="chat-sidebar__tabs" role="tablist">
+                <button type="button" class="chat-sidebar__tab is-active" id="tabChatsBtn" role="tab" aria-selected="true">
+                    <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" class="chat-sidebar__tab-icon">
+                        <path d="M14 8c0 3.314-2.686 6-6 6a5.9 5.9 0 01-2.8-.7L2 14l.7-3.2A5.9 5.9 0 012 8c0-3.314 2.686-6 6-6s6 2.686 6 6z"></path>
+                    </svg>
+                    <span>Chats</span>
+                </button>
+                <button type="button" class="chat-sidebar__tab" id="tabLimitsBtn" role="tab" aria-selected="false">
+                    <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" class="chat-sidebar__tab-icon">
+                        <path d="M2.5 10.5h3v3h-3v-3zm4-5h3v8h-3v-8zm4-3h3v11h-3v-11z"></path>
+                    </svg>
+                    <span>Limits</span>
+                </button>
+            </div>
+
+            <div class="chat-sidebar__pane is-active" id="sidebarChatsPane">
+                <button type="button" class="chat-sidebar__new-btn" id="newChatSidebarBtn">
+                    <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+                        <line x1="8" y1="2" x2="8" y2="14"></line>
+                        <line x1="2" y1="8" x2="14" y2="8"></line>
+                    </svg>
+                    <span>New Conversation</span>
+                </button>
+
+                <div class="chat-sidebar__list" id="historyList"></div>
+            </div>
+
+            <div class="chat-sidebar__pane" id="sidebarLimitsPane" style="display: none;">
+                <div class="limits-view">
+                    <div class="limits-card limits-card--plan">
+                        <div class="limits-card__plan-row">
+                            <span class="limits-card__plan-name" id="limitsPlanName">Free Plan</span>
+                            <span class="limits-card__plan-badge" id="limitsPlanBadge">Active</span>
+                        </div>
+                    </div>
+
+                    <div class="limits-card">
+                        <div class="limits-card__header">
+                            <span class="limits-card__label">Daily Requests</span>
+                            <span class="limits-card__stat" id="limitsDailyStat">0 / 5</span>
+                        </div>
+                        <div class="limits-track">
+                            <div class="limits-bar" id="limitsMainBar" style="width: 0%;"></div>
+                        </div>
+                        <div class="limits-card__footer-info">
+                            <span class="limits-card__remaining" id="limitsRemaining">5 remaining</span>
+                            <span class="limits-card__pct" id="limitsPercent">0%</span>
+                        </div>
+                    </div>
+
+                    <div class="limits-card" id="limitsHeavyCard" style="display: none;">
+                        <div class="limits-card__header">
+                            <span class="limits-card__label">Claude & GPT Astra</span>
+                            <span class="limits-card__stat" id="limitsHeavyStat">0 / 20</span>
+                        </div>
+                        <div class="limits-track" id="limitsHeavyTrack" style="display: none;">
+                            <div class="limits-bar limits-bar--heavy" id="limitsHeavyBar" style="width: 0%;"></div>
+                        </div>
+                        <div class="limits-card__footer-info">
+                            <span class="limits-card__remaining" id="limitsHeavyDesc">20 remaining</span>
+                            <span class="limits-card__pct" id="limitsHeavyPct" style="display: none;">0%</span>
+                        </div>
+                    </div>
+
+                    <div class="limits-card limits-card--reset">
+                        <div class="limits-card__reset-inner">
+                            <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" class="limits-reset-icon">
+                                <circle cx="8" cy="8" r="6.5"></circle>
+                                <polyline points="8 4.5 8 8 10.5 9.5"></polyline>
+                            </svg>
+                            <div class="limits-card__reset-texts">
+                                <span class="limits-card__reset-label">Quota Resets</span>
+                                <span class="limits-card__reset-time" id="limitsResetTime">in 24 hours</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="limits-upgrade-card" id="limitsUpgradeCard">
+                        <span class="limits-upgrade-card__title">Need More Requests?</span>
+                        <p class="limits-upgrade-card__desc">Upgrade to Pulse or Nova for unlimited messages and unrestricted model access.</p>
+                        <a href="../#products" class="limits-upgrade-card__btn" id="limitsUpgradeBtn">View Plans</a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="chat-sidebar__footer">
+                <div class="chat-sidebar__user" id="sidebarUserInfo">
+                    <span class="chat-sidebar__user-name" id="sidebarUserName">Guest Mode</span>
+                    <span class="chat-sidebar__user-status" id="sidebarUserStatus">Not signed in</span>
+                </div>
+                <button type="button" class="chat-sidebar__clear-btn" id="clearHistoryBtn" title="Clear History"
+                    aria-label="Clear History">
+                    <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <path
+                            d="M2 4h12M5.333 4V2.667a1.333 1.333 0 011.334-1.334h2.666a1.333 1.333 0 011.334 1.334V4m2 0v9.333a1.333 1.333 0 01-1.334 1.334H4.667a1.333 1.333 0 01-1.334-1.334V4h9.334z">
+                        </path>
+                    </svg>
+                </button>
+            </div>
+        </aside>
+
+        <div class="chat-sidebar__overlay" id="sidebarOverlay"></div>
+
+        <main class="chat-main">
+            <button type="button" class="chat-sidebar-open-btn" id="sidebarOpenBtn" aria-label="Open sidebar" title="Open sidebar">
+                <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" class="chat-sidebar__toggle-icon">
+                    <rect x="3" y="3" width="14" height="14" rx="2.5"></rect>
+                    <path d="M8 3v14"></path>
+                    <path d="M10.5 7.5l2.5 2.5-2.5 2.5"></path>
+                </svg>
+            </button>
+            <div class="bg-doodles" aria-hidden="true">
+                <svg class="bg-doodle bg-doodle--1" viewBox="0 0 600 360" fill="none">
+                    <path d="M -60 140 C 60 180, 130 280, 210 260 C 270 240, 310 170, 280 90 C 250 20, 180 40, 195 120 C 205 180, 260 210, 320 200 C 400 180, 480 90, 560 60 C 610 40, 640 20, 680 -30"></path>
+                </svg>
+                <svg class="bg-doodle bg-doodle--2" viewBox="0 0 600 400" fill="none">
+                    <path d="M 380 -60 C 360 40, 320 110, 250 130 C 180 150, 140 220, 170 280 C 200 330, 280 320, 295 250 C 310 190, 250 160, 210 180 C 160 200, 140 260, 170 320 C 200 380, 280 410, 380 390 C 470 370, 560 330, 680 290"></path>
+                </svg>
+                <svg class="bg-doodle bg-doodle--3" viewBox="0 0 800 360" fill="none">
+                    <path d="M -60 260 C 50 240, 110 180, 160 120 C 195 80, 235 35, 215 12 C 190 -10, 145 10, 155 60 C 165 110, 215 140, 270 150 C 350 165, 420 185, 490 155 C 535 130, 580 75, 605 45 C 630 12, 590 -10, 565 12 C 535 38, 550 98, 590 128 C 650 168, 730 250, 880 310"></path>
+                </svg>
+            </div>
+            <div class="chat-messages" id="chatMessages">
+                <div class="chat-empty" id="chatEmptyState">
+                    <h1 class="chat-empty__title">How can I help you today?</h1>
+
+                    <div class="chat-guest-banner" id="chatGuestBanner">
+                        <span>Sign in to send messages and save conversation history.</span>
+                        <a href="../reg/" class="chat-guest-banner__btn">Sign In</a>
+                    </div>
+                </div>
+
+                <div class="chat-feed" id="chatFeed"></div>
+            </div>
+
+            <div class="chat-input-container">
+                <div class="chat-file-notice" id="fileNotice"></div>
+
+                <form class="chat-bar" id="chatBar" onsubmit="event.preventDefault()">
+                    <div class="chat-bar__attachments" id="attachmentsList"></div>
+
+                    <div class="chat-bar__top">
+                        <textarea class="chat-bar__input" id="chatInput"
+                            placeholder="Sign in to message Gemini 3.8 Flash..." rows="1" autocomplete="off" autofocus></textarea>
+                    </div>
+
+                    <div class="chat-bar__bottom">
+                        <div class="chat-bar__tools">
+                            <label class="chat-bar__tool-btn" id="attachBtn" title="Attach any file up to 10 MB"
+                                aria-label="Attach file up to 10 MB">
+                                <img src="../assets/pictures/sk.png" alt="Attach">
+                                <input type="file" id="fileInput" multiple hidden>
+                            </label>
+
+                            <button type="button" class="chat-bar__tool-btn chat-bar__tool-btn--voice" id="voiceRecordBtn" title="Voice dictation"
+                                aria-label="Voice dictation">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" class="chat-bar__tool-icon">
+                                    <path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3z"></path>
+                                    <path d="M19 10v2a7 7 0 0 1-14 0v-2"></path>
+                                    <line x1="12" y1="19" x2="12" y2="22"></line>
+                                </svg>
+                            </button>
+
+                            <div class="model-select" id="modelSelect">
+                                <button type="button" class="model-select__btn" id="modelBtn" aria-haspopup="listbox"
+                                    aria-expanded="false">
+                                    <span class="model-select__label" id="currentModel">Gemini 3.8 Flash</span>
+                                    <img src="../assets/pictures/st.png" alt="" class="model-select__arrow">
+                                </button>
+                                <div class="model-select__menu" id="modelMenu" role="listbox">
+                                    <button type="button" class="model-select__item" data-model="Gemini 4.0">Gemini
+                                        4.0</button>
+                                    <button type="button" class="model-select__item is-selected"
+                                        data-model="Gemini 3.8 Flash">Gemini 3.8 Flash</button>
+                                    <button type="button" class="model-select__item" data-model="Claude 5.5 Opus">Claude
+                                        5.5 Opus</button>
+                                    <button type="button" class="model-select__item"
+                                        data-model="Claude 5.1 Fable">Claude 5.1 Fable</button>
+                                    <button type="button" class="model-select__item"
+                                        data-model="Claude 5.5 Sonet">Claude 5.5 Sonet</button>
+                                    <button type="button" class="model-select__item"
+                                        data-model="Chat GPT Astra 6.1">Chat GPT Astra 6.1</button>
+                                    <button type="button" class="model-select__item" data-model="Chat GPT Sol 5.6">Chat
+                                        GPT Sol 5.6</button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <button type="submit" class="chat-bar__send-btn" id="sendBtn" aria-label="Send message">
+                            <svg viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M10 15V5M10 5L5.5 9.5M10 5L14.5 9.5" stroke="currentColor" stroke-width="2"
+                                    stroke-linecap="round" stroke-linejoin="round" />
+                            </svg>
+                        </button>
+                    </div>
+
+                    <div class="chat-voice-panel" id="voicePanel" style="display: none;">
+                        <div class="chat-voice-panel__status">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" class="chat-voice-panel__icon">
+                                <path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3z"></path>
+                                <path d="M19 10v2a7 7 0 0 1-14 0v-2"></path>
+                                <line x1="12" y1="19" x2="12" y2="22"></line>
+                            </svg>
+                            <span class="chat-voice-panel__timer" id="voiceTimer">00:00</span>
+                        </div>
+                        <div class="chat-voice-panel__wave" id="voiceWave">
+                            <span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span>
+                        </div>
+                        <div class="chat-voice-panel__actions">
+                            <button type="button" class="chat-voice-panel__btn chat-voice-panel__btn--cancel" id="voiceCancelBtn" title="Cancel recording" aria-label="Cancel recording">
+                                <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M5 5l10 10M15 5L5 15"></path>
+                                </svg>
+                            </button>
+                            <button type="button" class="chat-voice-panel__btn chat-voice-panel__btn--done" id="voiceDoneBtn" title="Finish recording" aria-label="Finish recording">
+                                <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                                    <polyline points="4 10.5 8 14.5 16 6.5"></polyline>
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="chat-bar__drop-overlay" id="dropOverlay">
+                        <img src="../assets/pictures/sk.png" alt="" class="chat-bar__drop-icon">
+                        <span class="chat-bar__drop-text">Drop files to upload (up to 10 MB)</span>
+                    </div>
+                </form>
+
+                <p class="chat-disclaimer">
+                    Model may make mistakes. Verify important info.
+                </p>
+            </div>
+        </main>
+    </div>
+
+    <div class="modal" id="authModal" aria-hidden="true">
+        <div class="modal__backdrop" id="authModalBackdrop"></div>
+        <div class="modal__dialog auth-req-dialog" role="dialog" aria-modal="true">
+            <button type="button" class="modal__close" id="authModalClose" aria-label="Close modal">
+                <img src="../assets/pictures/kr.png" alt="Close">
+            </button>
+            <span class="auth-req-dialog__badge">Authentication Required</span>
+            <h3 class="auth-req-dialog__title" id="authModalTitle">Sign in to start chatting</h3>
+            <p class="auth-req-dialog__desc" id="authModalDesc">
+                An active Chromo account is required to prompt neural models and save your conversation history.
+            </p>
+            <div class="auth-req-dialog__actions">
+                <a href="../reg/" class="auth-req-dialog__btn-primary" id="authModalPrimaryBtn">Sign In or
+                    Register</a>
+                <button type="button" class="auth-req-dialog__btn-secondary" id="authModalCancelBtn">Cancel</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="chat-center-toast" id="centerToast" role="alert" aria-live="assertive">
+        <div class="chat-center-toast__dialog">
+            <div class="chat-center-toast__icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                    stroke-linejoin="round">
+                    <circle cx="12" cy="12" r="10"></circle>
+                    <line x1="12" y1="8" x2="12" y2="12"></line>
+                    <line x1="12" y1="16" x2="12.01" y2="16"></line>
+                </svg>
+            </div>
+            <div class="chat-center-toast__content">
+                <div class="chat-center-toast__title" id="centerToastTitle">Connection Error</div>
+                <div class="chat-center-toast__desc" id="centerToastDesc">Unable to reach the AI server. Please try
+                    again.</div>
+            </div>
+            <button type="button" class="chat-center-toast__close" id="centerToastClose"
+                aria-label="Close notification">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                    stroke-linejoin="round">
+                    <line x1="18" y1="6" x2="6" y2="18"></line>
+                    <line x1="6" y1="6" x2="18" y2="18"></line>
+                </svg>
+            </button>
+        </div>
+    </div>
+
+    <script src="../js/chat.js"></script>
+</body>
+
+</html>

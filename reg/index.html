@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>Chromo Sign In &amp; Register</title>
+  <link rel="icon" type="image/x-icon" href="../assets/logo/favico/favicon.ico">
+  <link rel="icon" type="image/png" sizes="32x32" href="../assets/logo/favico/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="../assets/logo/favico/favicon-16x16.png">
+  <link rel="apple-touch-icon" sizes="180x180" href="../assets/logo/favico/apple-touch-icon.png">
+  <link rel="manifest" href="../assets/logo/favico/site.webmanifest">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../css/main.css">
+  <link rel="stylesheet" href="../css/reg.css">
+  <script src="../js/security.js"></script>
+</head>
+
+<body>
+  <div class="bg-doodles" aria-hidden="true">
+    <svg class="bg-doodle bg-doodle--1" viewBox="0 0 600 360" fill="none">
+      <path d="M -60 140 C 60 180, 130 280, 210 260 C 270 240, 310 170, 280 90 C 250 20, 180 40, 195 120 C 205 180, 260 210, 320 200 C 400 180, 480 90, 560 60 C 610 40, 640 20, 680 -30"></path>
+    </svg>
+    <svg class="bg-doodle bg-doodle--2" viewBox="0 0 600 400" fill="none">
+      <path d="M 380 -60 C 360 40, 320 110, 250 130 C 180 150, 140 220, 170 280 C 200 330, 280 320, 295 250 C 310 190, 250 160, 210 180 C 160 200, 140 260, 170 320 C 200 380, 280 410, 380 390 C 470 370, 560 330, 680 290"></path>
+    </svg>
+    <svg class="bg-doodle bg-doodle--3" viewBox="0 0 800 360" fill="none">
+      <path d="M -60 260 C 50 240, 110 180, 160 120 C 195 80, 235 35, 215 12 C 190 -10, 145 10, 155 60 C 165 110, 215 140, 270 150 C 350 165, 420 185, 490 155 C 535 130, 580 75, 605 45 C 630 12, 590 -10, 565 12 C 535 38, 550 98, 590 128 C 650 168, 730 250, 880 310"></path>
+    </svg>
+  </div>
+  <header class="header">
+    <div class="container header__inner">
+      <a href="../" class="header__logo">Chromo</a>
+
+      <nav class="header__nav" id="mainNav">
+        <a href="../" class="header__nav-link">
+          <svg class="header__nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+            <polyline points="9 22 9 12 15 12 15 22"></polyline>
+          </svg>
+          <span>Home</span>
+        </a>
+        <a href="../chat/" class="header__nav-link">
+          <svg class="header__nav-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M14 8c0 3.314-2.686 6-6 6a5.9 5.9 0 01-2.8-.7L2 14l.7-3.2A5.9 5.9 0 012 8c0-3.314 2.686-6 6-6s6 2.686 6 6z"></path>
+          </svg>
+          <span>Chat</span>
+        </a>
+        <a href="../#products" class="header__nav-link">
+          <svg class="header__nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+            <polygon points="12 2 2 7 12 12 22 7 12 2"></polygon>
+            <polyline points="2 17 12 22 22 17"></polyline>
+            <polyline points="2 12 12 17 22 12"></polyline>
+          </svg>
+          <span>Products</span>
+        </a>
+        <a href="../#about" class="header__nav-link">
+          <svg class="header__nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+            <circle cx="9" cy="7" r="4"></circle>
+            <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+            <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+          </svg>
+          <span>About Us</span>
+        </a>
+      </nav>
+
+      <div class="header__actions">
+        <a href="./" class="header__account header__account--active" aria-label="Account" title="Account">
+          <img src="../assets/pictures/acc.png" alt="Account">
+        </a>
+        <button type="button" class="header__burger" id="burgerBtn" aria-label="Toggle navigation"
+          aria-expanded="false">
+          <span></span>
+          <span></span>
+          <span></span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <main class="main auth-main">
+    <div class="container auth-container">
+      <div class="auth-card">
+        <div class="auth-tabs" role="tablist">
+          <button type="button" class="auth-tab is-active" id="tabSignIn" role="tab" aria-selected="true"
+            aria-controls="panelSignIn">Sign In</button>
+          <button type="button" class="auth-tab" id="tabSignUp" role="tab" aria-selected="false"
+            aria-controls="panelSignUp">Register</button>
+        </div>
+
+        <div class="auth-panel is-active" id="panelSignIn" role="tabpanel" aria-labelledby="tabSignIn">
+          <div class="auth-header">
+            <h1 class="auth-title">Welcome back</h1>
+            <p class="auth-subtitle">Sign in to your Chromo account to continue</p>
+          </div>
+
+          <form class="auth-form" id="signInForm" onsubmit="event.preventDefault()">
+            <div class="auth-field">
+              <label for="signInUsername" class="auth-label">Username</label>
+              <input type="text" id="signInUsername" class="auth-input" placeholder="Enter your username"
+                autocomplete="username" required>
+            </div>
+
+            <div class="auth-field">
+              <div class="auth-field-header">
+                <label for="signInPassword" class="auth-label">Password</label>
+                <a href="#forgot" class="auth-forgot" id="forgotLink">Forgot password?</a>
+              </div>
+              <div class="auth-input-wrap">
+                <input type="password" id="signInPassword" class="auth-input" placeholder="Enter your password"
+                  autocomplete="current-password" required>
+                <button type="button" class="auth-toggle-pass" aria-label="Toggle password visibility">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                    stroke-linejoin="round" class="eye-icon">
+                    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
+                    <circle cx="12" cy="12" r="3" />
+                  </svg>
+                </button>
+              </div>
+            </div>
+
+            <div class="auth-options">
+              <label class="auth-checkbox">
+                <input type="checkbox" id="rememberMe">
+                <span class="auth-checkbox-mark"></span>
+                <span class="auth-checkbox-text">Remember me</span>
+              </label>
+            </div>
+
+            <button type="submit" class="auth-submit" id="signInSubmit">Sign In</button>
+
+            <div class="auth-notice" id="authNotice" aria-live="polite"></div>
+
+            <p class="auth-switch">
+              Don't have an account? <button type="button" class="auth-switch-btn" id="switchToSignUp">Register</button>
+            </p>
+          </form>
+        </div>
+
+        <div class="auth-panel" id="panelSignUp" role="tabpanel" aria-labelledby="tabSignUp">
+          <div class="auth-header">
+            <h1 class="auth-title">Create account</h1>
+            <p class="auth-subtitle">Get started with Chromo and all neural models</p>
+          </div>
+
+          <form class="auth-form" id="signUpForm" onsubmit="event.preventDefault()">
+            <div class="auth-field">
+              <label for="signUpUsername" class="auth-label">Username</label>
+              <input type="text" id="signUpUsername" class="auth-input" placeholder="Choose a username"
+                autocomplete="username" required>
+            </div>
+
+            <div class="auth-field">
+              <label for="signUpPassword" class="auth-label">Password</label>
+              <div class="auth-input-wrap">
+                <input type="password" id="signUpPassword" class="auth-input" placeholder="At least 8 characters"
+                  autocomplete="new-password" required>
+                <button type="button" class="auth-toggle-pass" aria-label="Toggle password visibility">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                    stroke-linejoin="round" class="eye-icon">
+                    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8z" />
+                    <circle cx="12" cy="12" r="3" />
+                  </svg>
+                </button>
+              </div>
+            </div>
+
+            <div class="auth-field">
+              <label for="signUpConfirm" class="auth-label">Confirm Password</label>
+              <div class="auth-input-wrap">
+                <input type="password" id="signUpConfirm" class="auth-input" placeholder="Repeat your password"
+                  autocomplete="new-password" required>
+                <button type="button" class="auth-toggle-pass" aria-label="Toggle password visibility">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                    stroke-linejoin="round" class="eye-icon">
+                    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8z" />
+                    <circle cx="12" cy="12" r="3" />
+                  </svg>
+                </button>
+              </div>
+            </div>
+
+            <div class="auth-options">
+              <label class="auth-checkbox">
+                <input type="checkbox" id="agreeTerms" required>
+                <span class="auth-checkbox-mark"></span>
+                <span class="auth-checkbox-text">I agree to Terms &amp; Privacy Policy</span>
+              </label>
+            </div>
+
+            <button type="submit" class="auth-submit" id="signUpSubmit">Register</button>
+
+            <div class="auth-notice" id="regNotice" aria-live="polite"></div>
+
+            <p class="auth-switch">
+              Already have an account? <button type="button" class="auth-switch-btn" id="switchToSignIn">Sign
+                In</button>
+            </p>
+          </form>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <footer class="footer">
+    <div class="container footer__inner">
+      <span class="footer__copy">&copy; 2026 Chromo</span>
+    </div>
+  </footer>
+
+  <div class="welcome-screen" id="welcomeScreen" aria-hidden="true">
+    <h1 class="welcome-screen__title">Welcome</h1>
+  </div>
+
+  <script src="../js/reg.js"></script>
+</body>
+
+</html>
