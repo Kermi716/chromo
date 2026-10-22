@@ -47,6 +47,14 @@
                     </svg>
                     <span>Chat</span>
                 </a>
+                <a href="#stats" class="header__nav-link" id="navStats">
+                    <svg class="header__nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                        <line x1="18" y1="20" x2="18" y2="10"></line>
+                        <line x1="12" y1="20" x2="12" y2="4"></line>
+                        <line x1="6" y1="20" x2="6" y2="14"></line>
+                    </svg>
+                    <span>Stats</span>
+                </a>
                 <a href="#products" class="header__nav-link" id="navProducts">
                     <svg class="header__nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
                         <polygon points="12 2 2 7 12 12 22 7 12 2"></polygon>
@@ -215,13 +223,42 @@
                 </form>
             </section>
 
+            <section class="stats" id="stats">
+                <div class="stats__top">
+                    <div class="stats__info">
+                        <h2 class="stats__title">Model Activity</h2>
+                        <div class="stats__lead">
+                            <span class="stats__lead-label">Most used:</span>
+                            <span class="stats__lead-model" id="analyticsLeaderName">Claude 5.5 Opus</span>
+                            <span class="stats__lead-share" id="analyticsLeaderShare">0%</span>
+                            <span class="stats__lead-total" id="analyticsTotalRequests">0 queries</span>
+                        </div>
+                    </div>
+                    <div class="stats__tabs" role="tablist">
+                        <button type="button" class="stats__tab is-active" data-period="week" id="periodBtnWeek" role="tab" aria-selected="true">Week</button>
+                        <button type="button" class="stats__tab" data-period="month" id="periodBtnMonth" role="tab" aria-selected="false">Month</button>
+                        <button type="button" class="stats__tab" data-period="year" id="periodBtnYear" role="tab" aria-selected="false">Year</button>
+                    </div>
+                </div>
+
+                <div class="stats__chart-area" id="analyticsChartWrapper">
+                    <svg class="stats__chart-svg" id="analyticsChartSvg"></svg>
+                    <div class="stats__tooltip" id="analyticsTooltip"></div>
+                </div>
+
+                <div class="stats__breakdown">
+                    <div class="stats__breakdown-head">Usage Breakdown</div>
+                    <div class="stats__list" id="analyticsDistList"></div>
+                </div>
+            </section>
+
             <section class="products" id="products">
                 <h2 class="products__title">Products</h2>
 
                 <div class="products__grid">
                     <div class="product-card">
                         <div class="product-card__header">
-                            <span class="product-card__term">1 Month</span>
+                            <span class="product-card__term">50 msgs / day</span>
                             <h3 class="product-card__name">Spark</h3>
                             <div class="product-card__price">
                                 <span class="product-card__amount">$10</span>
@@ -266,7 +303,7 @@
 
                     <div class="product-card">
                         <div class="product-card__header">
-                            <span class="product-card__term">6 Months</span>
+                            <span class="product-card__term">200 msgs / day</span>
                             <h3 class="product-card__name">Pulse</h3>
                             <div class="product-card__price">
                                 <span class="product-card__amount">$48</span>
@@ -311,7 +348,7 @@
 
                     <div class="product-card product-card--featured">
                         <div class="product-card__header">
-                            <span class="product-card__term product-card__term--dark">No Limits</span>
+                            <span class="product-card__term product-card__term--dark">Unlimited</span>
                             <h3 class="product-card__name">Nova</h3>
                             <div class="product-card__price">
                                 <span class="product-card__amount">$89</span>
@@ -353,6 +390,12 @@
                         <button type="button" class="product-card__btn product-card__btn--dark" data-name="Nova"
                             data-term="No Limits" data-price="$89" data-period="/ 12 months">Purchase</button>
                     </div>
+                </div>
+
+                <div class="products__dots" id="productsDots" aria-label="Subscription plans">
+                    <button type="button" class="products__dot is-active" data-index="0" aria-label="Spark plan"></button>
+                    <button type="button" class="products__dot" data-index="1" aria-label="Pulse plan"></button>
+                    <button type="button" class="products__dot" data-index="2" aria-label="Nova plan"></button>
                 </div>
             </section>
 

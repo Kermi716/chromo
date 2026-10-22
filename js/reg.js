@@ -73,6 +73,11 @@ function triggerWelcomeRedirect() {
   document.body.classList.add('is-welcoming');
   setTimeout(() => {
     const isSubdir = window.location.pathname.includes('/reg/');
+    const pending = sessionStorage.getItem('chromo_pending_prompt');
+    if (pending) {
+      window.location.href = isSubdir ? '../chat/' : 'chat/';
+      return;
+    }
     window.location.href = isSubdir ? '../' : './';
   }, 1250);
 }

@@ -33,6 +33,21 @@ function getCurrentUser() {
     return user && user.trim() ? user.trim() : null;
 }
 
+function sendChatTelemetry(modelName, latencyMs) {
+    const user = getCurrentUser();
+    fetch(`${API_BASE}/api/telemetry`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+            model: modelName,
+            username: user,
+            latency_ms: Math.round(latencyMs || 0),
+            timestamp: Date.now()
+        }),
+        keepalive: true
+    }).catch(() => {});
+}
+
 const MODEL_TIERS = {
     'Gemini 3.8 Flash': 'Free',
     'Chat GPT Sol 5.6': 'Free',
@@ -1637,12 +1652,11 @@ if (chatBar) {
     });
 }
 
-async function sendMessage() {
+async function sendMessage(overrideText) {
     if (typeof isDictating !== 'undefined' && isDictating) {
         finishVoiceDictation();
     }
-    if (!chatInput) return;
-    const text = chatInput.value.trim();
+    const text = (typeof overrideText === 'string' ? overrideText : (chatInput ? chatInput.value : '')).trim();
     const files = [...currentAttachedFiles];
 
     if (text === '' && files.length === 0) return;
@@ -1657,8 +1671,10 @@ async function sendMessage() {
 
     renderMessageBubble('user', text, null, files);
 
-    chatInput.value = '';
-    chatInput.style.height = 'auto';
+    if (chatInput) {
+        chatInput.value = '';
+        chatInput.style.height = 'auto';
+    }
     if (attachmentsList) attachmentsList.innerHTML = '';
     currentAttachedFiles = [];
     focusChatInput();
@@ -1704,6 +1720,7 @@ async function sendMessage() {
             }));
         }
 
+        const reqStart = performance.now();
         const res = await fetch(`${API_BASE}/api/chat`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
@@ -1722,6 +1739,7 @@ async function sendMessage() {
         if (ind) ind.remove();
 
         if (data.ok) {
+            sendChatTelemetry(activeModel, performance.now() - reqStart);
             const replyText = data.reply || '';
             renderMessageBubble('assistant', replyText, activeModel, null);
             scrollToBottom();
@@ -1846,11 +1864,19 @@ function checkPendingPrompt() {
         }
 
         if (promptText) {
+            if (chatInput) {
+                chatInput.value = '';
+                chatInput.style.height = 'auto';
+            }
             if (getCurrentUser()) {
-                if (chatInput) chatInput.value = promptText;
-                sendMessage();
+                setTimeout(() => {
+                    sendMessage(promptText);
+                }, 30);
             } else {
-                if (chatInput) chatInput.value = promptText;
+                sessionStorage.setItem('chromo_pending_prompt', JSON.stringify({
+                    prompt: promptText,
+                    model: selectedModel || 'Gemini 3.8 Flash'
+                }));
                 openAuthModal(
                     'Sign in to message ' + (selectedModel || 'neural models'),
                     'Please sign in or register to send your prompt and view responses.'
@@ -2074,6 +2100,7 @@ async function sendVoiceMessageDirectly(text, voiceFileRecord) {
             }));
         }
 
+        const reqStart = performance.now();
         const res = await fetch(`${API_BASE}/api/chat`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
@@ -2091,6 +2118,7 @@ async function sendVoiceMessageDirectly(text, voiceFileRecord) {
         if (ind) ind.remove();
 
         if (data.ok) {
+            sendChatTelemetry(activeModel, performance.now() - reqStart);
             const replyText = data.reply || '';
             renderMessageBubble('assistant', replyText, activeModel, null);
             scrollToBottom();

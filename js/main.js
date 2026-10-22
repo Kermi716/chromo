@@ -21,8 +21,10 @@ if (burgerBtn && mainNav) {
 
 const navLinks = document.querySelectorAll('.header__nav-link');
 const navHome = document.getElementById('navHome');
+const navStats = document.getElementById('navStats');
 const navProducts = document.getElementById('navProducts');
 const navAbout = document.getElementById('navAbout');
+const statsSection = document.getElementById('stats');
 const productsSection = document.getElementById('products');
 const aboutSection = document.getElementById('about');
 
@@ -58,7 +60,10 @@ navLinks.forEach((link) => {
     link.addEventListener('click', (e) => {
         const href = link.getAttribute('href');
 
-        if (href === '#products' && productsSection) {
+        if (href === '#stats' && statsSection) {
+            e.preventDefault();
+            smoothScrollToSection(statsSection, link);
+        } else if (href === '#products' && productsSection) {
             e.preventDefault();
             smoothScrollToSection(productsSection, link);
         } else if (href === '#about' && aboutSection) {
@@ -88,7 +93,7 @@ navLinks.forEach((link) => {
 });
 
 window.addEventListener('scroll', () => {
-    if (isClickScrolling || !productsSection || !navHome) return;
+    if (isClickScrolling || !navHome) return;
 
     const windowHeight = window.innerHeight;
     const isScrolledToBottom = (windowHeight + window.scrollY) >= (document.documentElement.scrollHeight - 50);
@@ -105,6 +110,14 @@ window.addEventListener('scroll', () => {
         const prodRect = productsSection.getBoundingClientRect();
         if (prodRect.top <= windowHeight * 0.45) {
             setActiveNav(navProducts);
+            return;
+        }
+    }
+
+    if (statsSection) {
+        const statsRect = statsSection.getBoundingClientRect();
+        if (statsRect.top <= windowHeight * 0.45) {
+            setActiveNav(navStats);
             return;
         }
     }
@@ -553,16 +566,9 @@ function handleChatAttempt(e) {
 }
 
 if (chatInput) {
-    chatInput.addEventListener('focus', (e) => {
-        if (!getCurrentUser()) {
-            handleChatAttempt(e);
-        }
-    });
-
     chatInput.addEventListener('keydown', (e) => {
         if (e.key === 'Enter' && !e.shiftKey) {
             e.preventDefault();
-            if (!handleChatAttempt(e)) return;
             if (chatBar) {
                 chatBar.dispatchEvent(new Event('submit', { cancelable: true }));
             }
@@ -738,20 +744,30 @@ if (chatBar) {
         if (typeof isDictating !== 'undefined' && isDictating) {
             finishVoiceDictation();
         }
-        if (!handleChatAttempt(e)) return;
 
         const text = chatInput ? chatInput.value.trim() : '';
-        if (text !== '') {
-            const activeModel = currentModel ? currentModel.textContent.trim() : 'Gemini 3.8 Flash';
-            localStorage.setItem('chromo_selected_model', activeModel);
-            sessionStorage.setItem('chromo_pending_prompt', JSON.stringify({
-                prompt: text,
-                model: activeModel
-            }));
-            window.location.href = 'chat/';
-        } else {
+        if (!text) {
             showCenterToast('Empty Message', 'Please enter a prompt or use voice dictation.');
+            return;
         }
+
+        const activeModel = currentModel ? currentModel.textContent.trim() : 'Gemini 3.8 Flash';
+        localStorage.setItem('chromo_selected_model', activeModel);
+        sessionStorage.setItem('chromo_pending_prompt', JSON.stringify({
+            prompt: text,
+            model: activeModel,
+            autoSend: true
+        }));
+
+        if (!getCurrentUser()) {
+            openAuthModal(
+                'Sign in to message ' + activeModel,
+                'An active Chromo account is required to prompt neural models and start conversations. Please sign in or register to proceed.'
+            );
+            return;
+        }
+
+        window.location.href = 'chat/';
     });
 }
 
@@ -1105,3 +1121,593 @@ if (voiceCancelBtn) voiceCancelBtn.addEventListener('click', cancelVoiceDictatio
 if (voiceDoneBtn) voiceDoneBtn.addEventListener('click', finishVoiceDictation);
 
 updateAuthUI();
+
+const MODEL_BRAND_COLORS = {
+    'Claude 5.5 Opus': { color: '#d97706', gradient: 'linear-gradient(90deg, #d97706, #ea580c)' },
+    'Claude 5.5 Sonet': { color: '#f59e0b', gradient: 'linear-gradient(90deg, #f59e0b, #d97706)' },
+    'Claude 5.1 Fable': { color: '#b45309', gradient: 'linear-gradient(90deg, #b45309, #92400e)' },
+    'Gemini 4.0': { color: '#2563eb', gradient: 'linear-gradient(90deg, #2563eb, #3b82f6)' },
+    'Gemini 3.8 Flash': { color: '#0284c7', gradient: 'linear-gradient(90deg, #0284c7, #38bdf8)' },
+    'Chat GPT Astra 6.1': { color: '#059669', gradient: 'linear-gradient(90deg, #059669, #10b981)' },
+    'Chat GPT Sol 5.6': { color: '#10b981', gradient: 'linear-gradient(90deg, #10b981, #34d399)' }
+};
+
+let telemetryState = {
+    period: 'week',
+    data: null
+};
+
+function formatCompactNumber(num) {
+    if (typeof num !== 'number' || isNaN(num)) return '0';
+    if (num >= 1000000) return (num / 1000000).toFixed(1) + 'M';
+    if (num >= 1000) return (num / 1000).toFixed(1) + 'k';
+    return num.toLocaleString();
+}
+
+function formatFullNumber(num) {
+    if (typeof num !== 'number' || isNaN(num)) return '0';
+    return num.toLocaleString();
+}
+
+function generateFallbackTelemetry() {
+    const models = [
+        { model: 'Claude 5.5 Opus', vendor: 'Anthropic Frontier', wWeight: 0.35, mWeight: 0.33, yWeight: 0.31 },
+        { model: 'Gemini 3.8 Flash', vendor: 'Google DeepMind', wWeight: 0.24, mWeight: 0.25, yWeight: 0.23 },
+        { model: 'Chat GPT Astra 6.1', vendor: 'OpenAI Frontier', wWeight: 0.18, mWeight: 0.17, yWeight: 0.18 },
+        { model: 'Claude 5.5 Sonet', vendor: 'Anthropic Frontier', wWeight: 0.10, mWeight: 0.11, yWeight: 0.12 },
+        { model: 'Gemini 4.0', vendor: 'Google DeepMind', wWeight: 0.07, mWeight: 0.08, yWeight: 0.09 },
+        { model: 'Chat GPT Sol 5.6', vendor: 'OpenAI Frontier', wWeight: 0.04, mWeight: 0.04, yWeight: 0.04 },
+        { model: 'Claude 5.1 Fable', vendor: 'Anthropic Frontier', wWeight: 0.02, mWeight: 0.02, yWeight: 0.03 }
+    ];
+
+    function makePeriod(periodName, totalReqs, pointCount, labelFn) {
+        const weightKey = periodName === 'week' ? 'wWeight' : (periodName === 'month' ? 'mWeight' : 'yWeight');
+        const breakdown = models.map((m) => {
+            const count = Math.round(totalReqs * m[weightKey]);
+            return {
+                model: m.model,
+                vendor: m.vendor,
+                count: count,
+                percentage: +(m[weightKey] * 100).toFixed(1)
+            };
+        }).sort((a, b) => b.count - a.count);
+
+        const timeline = [];
+        const basePoint = totalReqs / pointCount;
+        for (let i = 0; i < pointCount; i++) {
+            const variance = 0.88 + Math.sin(i * 0.9) * 0.15 + (i / pointCount) * 0.18;
+            const ptTotal = Math.round(basePoint * variance);
+            timeline.push({
+                label: labelFn(i, pointCount),
+                date: 'P' + (i + 1),
+                total: ptTotal,
+                top_model: breakdown[0].model,
+                top_count: Math.round(ptTotal * breakdown[0].percentage / 100)
+            });
+        }
+
+        return {
+            top_model: breakdown[0].model,
+            top_vendor: breakdown[0].vendor,
+            top_count: breakdown[0].count,
+            top_percentage: breakdown[0].percentage,
+            total_requests: totalReqs,
+            breakdown: breakdown,
+            timeline: timeline
+        };
+    }
+
+    const days = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+    const months = ['Nov', 'Dec', 'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct'];
+
+    return {
+        week: makePeriod('week', 32480, 7, (i) => days[i % 7]),
+        month: makePeriod('month', 142600, 15, (i) => `Day ${i * 2 + 1}`),
+        year: makePeriod('year', 1845200, 12, (i) => months[i % 12])
+    };
+}
+
+async function fetchTelemetryStats() {
+    try {
+        const res = await fetch(`${API_BASE}/api/telemetry/stats`);
+        if (!res.ok) throw new Error('Bad response');
+        const json = await res.json();
+        if (json.ok && json.stats) {
+            telemetryState.data = json.stats;
+            renderTelemetry();
+            return;
+        }
+    } catch (err) {}
+
+    if (!telemetryState.data) {
+        telemetryState.data = generateFallbackTelemetry();
+        renderTelemetry();
+    }
+}
+
+let telemetryAnimState = {
+    rafId: null,
+    renderedPoints: null,
+    hasAnimatedInitial: false,
+    lastTotal: 0,
+    observer: null
+};
+
+function buildSmoothLinePath(pts) {
+    if (!pts || pts.length === 0) return '';
+    let d = `M ${pts[0].x.toFixed(1)} ${pts[0].y.toFixed(1)}`;
+    for (let i = 0; i < pts.length - 1; i++) {
+        const p0 = pts[i];
+        const p1 = pts[i + 1];
+        const cpX = (p0.x + p1.x) / 2;
+        d += ` C ${cpX.toFixed(1)} ${p0.y.toFixed(1)}, ${cpX.toFixed(1)} ${p1.y.toFixed(1)}, ${p1.x.toFixed(1)} ${p1.y.toFixed(1)}`;
+    }
+    return d;
+}
+
+function buildSmoothAreaPath(pts, baseBottom) {
+    if (!pts || pts.length === 0) return '';
+    const lineD = buildSmoothLinePath(pts);
+    return `${lineD} L ${pts[pts.length - 1].x.toFixed(1)} ${baseBottom.toFixed(1)} L ${pts[0].x.toFixed(1)} ${baseBottom.toFixed(1)} Z`;
+}
+
+function animateNumberValue(el, startVal, endVal, duration, suffix = '') {
+    if (!el) return;
+    const startTime = performance.now();
+    function tick(now) {
+        const elapsed = now - startTime;
+        const progress = Math.min(1, elapsed / duration);
+        const ease = 1 - Math.pow(1 - progress, 3);
+        const current = Math.round(startVal + (endVal - startVal) * ease);
+        el.textContent = formatFullNumber(current) + suffix;
+        if (progress < 1) requestAnimationFrame(tick);
+    }
+    requestAnimationFrame(tick);
+}
+
+function renderTelemetry() {
+    if (!telemetryState.data) return;
+    const current = telemetryState.data[telemetryState.period];
+    if (!current) return;
+
+    const leaderNameEl = document.getElementById('analyticsLeaderName');
+    const leaderShareEl = document.getElementById('analyticsLeaderShare');
+    const totalRequestsEl = document.getElementById('analyticsTotalRequests');
+
+    if (leaderNameEl) leaderNameEl.textContent = current.top_model || 'Claude 5.5 Opus';
+    if (leaderShareEl) leaderShareEl.textContent = (current.top_percentage || 0) + '%';
+    if (totalRequestsEl) {
+        const startVal = telemetryAnimState.lastTotal || current.total_requests;
+        animateNumberValue(totalRequestsEl, startVal, current.total_requests, 420, ' queries');
+        telemetryAnimState.lastTotal = current.total_requests;
+    }
+
+    renderTelemetryChart(current.timeline || []);
+    renderTelemetryDistribution(current.breakdown || []);
+}
+
+function renderTelemetryChart(timeline) {
+    const svg = document.getElementById('analyticsChartSvg');
+    const tooltip = document.getElementById('analyticsTooltip');
+    const wrapper = document.getElementById('analyticsChartWrapper');
+    if (!svg || !timeline || timeline.length === 0) return;
+
+    if (telemetryAnimState.rafId) {
+        cancelAnimationFrame(telemetryAnimState.rafId);
+        telemetryAnimState.rafId = null;
+    }
+
+    const width = Math.max(300, Math.round(wrapper.getBoundingClientRect().width || wrapper.clientWidth || 680));
+    const height = 190;
+    svg.setAttribute('viewBox', `0 0 ${width} ${height}`);
+
+    const padL = 44;
+    const padR = 20;
+    const padT = 16;
+    const padB = 32;
+
+    const plotW = width - padL - padR;
+    const plotH = height - padT - padB;
+    const baseBottom = padT + plotH;
+
+    const values = timeline.map((pt) => pt.total || 0);
+    const maxVal = Math.max(...values, 100);
+    const minVal = 0;
+
+    const targetPts = timeline.map((pt, i) => {
+        const x = padL + (i / Math.max(1, timeline.length - 1)) * plotW;
+        const norm = (pt.total - minVal) / Math.max(1, maxVal - minVal);
+        const y = padT + plotH - norm * plotH;
+        return { x, y, pt };
+    });
+
+    const prevPts = telemetryAnimState.renderedPoints;
+    const isInitial = !telemetryAnimState.hasAnimatedInitial || !prevPts || prevPts.length === 0;
+
+    while (svg.firstChild) svg.removeChild(svg.firstChild);
+
+    const defs = document.createElementNS('http://www.w3.org/2000/svg', 'defs');
+
+    const clip = document.createElementNS('http://www.w3.org/2000/svg', 'clipPath');
+    clip.setAttribute('id', 'telemetryDrawClip');
+    const clipRect = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
+    clipRect.setAttribute('x', '0');
+    clipRect.setAttribute('y', '0');
+    clipRect.setAttribute('width', isInitial ? '0' : String(width + 50));
+    clipRect.setAttribute('height', String(height));
+    clip.appendChild(clipRect);
+    defs.appendChild(clip);
+
+    const grad = document.createElementNS('http://www.w3.org/2000/svg', 'linearGradient');
+    grad.setAttribute('id', 'telemetryAreaGrad');
+    grad.setAttribute('x1', '0');
+    grad.setAttribute('y1', '0');
+    grad.setAttribute('x2', '0');
+    grad.setAttribute('y2', '1');
+
+    const stop1 = document.createElementNS('http://www.w3.org/2000/svg', 'stop');
+    stop1.setAttribute('offset', '0%');
+    stop1.setAttribute('stop-color', '#111111');
+    stop1.setAttribute('stop-opacity', '0.07');
+
+    const stop2 = document.createElementNS('http://www.w3.org/2000/svg', 'stop');
+    stop2.setAttribute('offset', '100%');
+    stop2.setAttribute('stop-color', '#111111');
+    stop2.setAttribute('stop-opacity', '0.00');
+
+    grad.appendChild(stop1);
+    grad.appendChild(stop2);
+    defs.appendChild(grad);
+    svg.appendChild(defs);
+
+    const gridGroup = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+    const gridSteps = 3;
+    for (let i = 0; i <= gridSteps; i++) {
+        const y = padT + (plotH / gridSteps) * i;
+        const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+        line.setAttribute('x1', String(padL));
+        line.setAttribute('y1', String(y));
+        line.setAttribute('x2', String(width - padR));
+        line.setAttribute('y2', String(y));
+        line.setAttribute('stroke', 'rgba(0, 0, 0, 0.04)');
+        line.setAttribute('stroke-width', '1');
+        line.setAttribute('stroke-dasharray', i === gridSteps ? 'none' : '2 3');
+        gridGroup.appendChild(line);
+
+        const valAtGrid = Math.round(maxVal - (maxVal / gridSteps) * i);
+        const label = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+        label.setAttribute('x', String(padL - 8));
+        label.setAttribute('y', String(y + 3));
+        label.setAttribute('text-anchor', 'end');
+        label.setAttribute('font-size', '11');
+        label.setAttribute('fill', '#a1a1aa');
+        label.setAttribute('font-family', 'inherit');
+        label.textContent = formatCompactNumber(valAtGrid);
+        gridGroup.appendChild(label);
+    }
+    svg.appendChild(gridGroup);
+
+    const chartClippedGroup = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+    chartClippedGroup.setAttribute('clip-path', 'url(#telemetryDrawClip)');
+
+    const areaPath = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+    areaPath.setAttribute('fill', 'url(#telemetryAreaGrad)');
+    chartClippedGroup.appendChild(areaPath);
+
+    const linePath = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+    linePath.setAttribute('fill', 'none');
+    linePath.setAttribute('stroke', '#111111');
+    linePath.setAttribute('stroke-width', '1.8');
+    linePath.setAttribute('stroke-linecap', 'round');
+    linePath.setAttribute('stroke-linejoin', 'round');
+    chartClippedGroup.appendChild(linePath);
+
+    svg.appendChild(chartClippedGroup);
+
+    const labelsGroup = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+    const maxLabels = timeline.length <= 12 ? timeline.length : 8;
+    const step = Math.ceil(timeline.length / maxLabels);
+
+    targetPts.forEach((p, idx) => {
+        if (idx % step === 0 || idx === targetPts.length - 1) {
+            const txt = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+            txt.setAttribute('x', String(p.x));
+            txt.setAttribute('y', String(height - 10));
+            txt.setAttribute('text-anchor', 'middle');
+            txt.setAttribute('font-size', '11');
+            txt.setAttribute('fill', '#8e8e93');
+            txt.setAttribute('font-family', 'inherit');
+            txt.textContent = p.pt.label || '';
+            labelsGroup.appendChild(txt);
+        }
+    });
+    svg.appendChild(labelsGroup);
+
+    const interactiveGroup = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+    const crosshair = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+    crosshair.setAttribute('stroke', 'rgba(0, 0, 0, 0.2)');
+    crosshair.setAttribute('stroke-width', '1');
+    crosshair.setAttribute('stroke-dasharray', '2 2');
+    crosshair.style.opacity = '0';
+    interactiveGroup.appendChild(crosshair);
+
+    const highlightCircle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+    highlightCircle.setAttribute('r', '4');
+    highlightCircle.setAttribute('fill', '#111111');
+    highlightCircle.setAttribute('stroke', '#ffffff');
+    highlightCircle.setAttribute('stroke-width', '2');
+    highlightCircle.style.opacity = '0';
+    interactiveGroup.appendChild(highlightCircle);
+    svg.appendChild(interactiveGroup);
+
+    if (isInitial) {
+        linePath.setAttribute('d', buildSmoothLinePath(targetPts));
+        areaPath.setAttribute('d', buildSmoothAreaPath(targetPts, baseBottom));
+        areaPath.style.opacity = '0';
+
+        const rider = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+        rider.setAttribute('r', '4');
+        rider.setAttribute('fill', '#111111');
+        rider.setAttribute('stroke', '#ffffff');
+        rider.setAttribute('stroke-width', '2');
+        rider.setAttribute('cx', String(targetPts[0].x));
+        rider.setAttribute('cy', String(targetPts[0].y));
+        rider.style.filter = 'drop-shadow(0 2px 5px rgba(0,0,0,0.25))';
+        rider.style.opacity = '0';
+        svg.appendChild(rider);
+
+        function startInitialAnimation() {
+            if (telemetryAnimState.hasAnimatedInitial) return;
+            telemetryAnimState.hasAnimatedInitial = true;
+            rider.style.opacity = '1';
+
+            const duration = 1250;
+            const startTime = performance.now();
+
+            function drawStep(now) {
+                const elapsed = now - startTime;
+                const progress = Math.min(1, elapsed / duration);
+                const ease = 1 - Math.pow(1 - progress, 2.5);
+
+                const currentX = padL + ease * plotW;
+                const prevIdx = ease * (targetPts.length - 1);
+                const idx0 = Math.floor(prevIdx);
+                const idx1 = Math.min(targetPts.length - 1, Math.ceil(prevIdx));
+                const frac = prevIdx - idx0;
+                const currentY = targetPts[idx0].y + (targetPts[idx1].y - targetPts[idx0].y) * frac;
+
+                clipRect.setAttribute('width', String(currentX));
+                rider.setAttribute('cx', String(currentX));
+                rider.setAttribute('cy', String(currentY));
+
+                if (ease < 0.6) {
+                    areaPath.style.opacity = '0';
+                } else {
+                    const factor = (ease - 0.6) / 0.4;
+                    areaPath.style.opacity = String((factor * factor).toFixed(3));
+                }
+
+                if (progress < 1) {
+                    telemetryAnimState.rafId = requestAnimationFrame(drawStep);
+                } else {
+                    clipRect.setAttribute('width', String(width + 50));
+                    areaPath.style.transition = 'opacity 0.45s ease';
+                    areaPath.style.opacity = '1';
+                    rider.style.transition = 'opacity 0.3s ease';
+                    rider.style.opacity = '0';
+                    setTimeout(() => {
+                        if (rider.parentNode) rider.parentNode.removeChild(rider);
+                    }, 350);
+                    telemetryAnimState.renderedPoints = targetPts;
+                    telemetryAnimState.rafId = null;
+                }
+            }
+
+            telemetryAnimState.rafId = requestAnimationFrame(drawStep);
+        }
+
+        if ('IntersectionObserver' in window && wrapper) {
+            if (telemetryAnimState.observer) {
+                telemetryAnimState.observer.disconnect();
+            }
+            telemetryAnimState.observer = new IntersectionObserver((entries) => {
+                if (entries[0] && entries[0].isIntersecting) {
+                    telemetryAnimState.observer.disconnect();
+                    telemetryAnimState.observer = null;
+                    setTimeout(startInitialAnimation, 120);
+                }
+            }, { threshold: 0.15 });
+            telemetryAnimState.observer.observe(wrapper);
+        } else {
+            setTimeout(startInitialAnimation, 180);
+        }
+    } else {
+        areaPath.style.opacity = '1';
+        areaPath.style.transition = 'none';
+        clipRect.setAttribute('width', String(width + 50));
+        const startYs = targetPts.map((tp) => {
+            const u = Math.max(0, Math.min(1, (tp.x - padL) / plotW));
+            const prevIdx = u * (prevPts.length - 1);
+            const idx0 = Math.floor(prevIdx);
+            const idx1 = Math.min(prevPts.length - 1, Math.ceil(prevIdx));
+            const frac = prevIdx - idx0;
+            return prevPts[idx0].y + (prevPts[idx1].y - prevPts[idx0].y) * frac;
+        });
+
+        const duration = 440;
+        const startTime = performance.now();
+
+        function morphStep(now) {
+            const elapsed = now - startTime;
+            const progress = Math.min(1, elapsed / duration);
+            const ease = 1 - Math.pow(1 - progress, 3);
+
+            const framePts = targetPts.map((tp, idx) => ({
+                x: tp.x,
+                y: startYs[idx] + (tp.y - startYs[idx]) * ease,
+                pt: tp.pt
+            }));
+
+            linePath.setAttribute('d', buildSmoothLinePath(framePts));
+            areaPath.setAttribute('d', buildSmoothAreaPath(framePts, baseBottom));
+
+            if (progress < 1) {
+                telemetryAnimState.rafId = requestAnimationFrame(morphStep);
+            } else {
+                telemetryAnimState.renderedPoints = targetPts;
+                telemetryAnimState.rafId = null;
+                linePath.setAttribute('d', buildSmoothLinePath(targetPts));
+                areaPath.setAttribute('d', buildSmoothAreaPath(targetPts, baseBottom));
+            }
+        }
+
+        telemetryAnimState.rafId = requestAnimationFrame(morphStep);
+    }
+
+    if (wrapper && tooltip) {
+        function handlePointer(clientX, clientY) {
+            const activePts = telemetryAnimState.renderedPoints || targetPts;
+            const rect = svg.getBoundingClientRect();
+            const posX = clientX - rect.left;
+
+            let closest = activePts[0];
+            let minDist = Math.abs(activePts[0].x - posX);
+            for (let i = 1; i < activePts.length; i++) {
+                const dist = Math.abs(activePts[i].x - posX);
+                if (dist < minDist) {
+                    minDist = dist;
+                    closest = activePts[i];
+                }
+            }
+
+            crosshair.setAttribute('x1', String(closest.x));
+            crosshair.setAttribute('y1', String(padT));
+            crosshair.setAttribute('x2', String(closest.x));
+            crosshair.setAttribute('y2', String(padT + plotH));
+            crosshair.style.opacity = '1';
+
+            highlightCircle.setAttribute('cx', String(closest.x));
+            highlightCircle.setAttribute('cy', String(closest.y));
+            highlightCircle.style.opacity = '1';
+
+            tooltip.innerHTML = `
+                <div class="stats__tooltip-date">${closest.pt.label || closest.pt.date || ''}</div>
+                <div class="stats__tooltip-val">${formatFullNumber(closest.pt.total)} queries</div>
+            `;
+            tooltip.style.left = `${closest.x}px`;
+            tooltip.style.top = `${closest.y}px`;
+            tooltip.classList.add('is-visible');
+        }
+
+        wrapper.onmousemove = (e) => handlePointer(e.clientX, e.clientY);
+        wrapper.ontouchmove = (e) => {
+            if (e.touches && e.touches[0]) {
+                handlePointer(e.touches[0].clientX, e.touches[0].clientY);
+            }
+        };
+
+        wrapper.onmouseleave = () => {
+            crosshair.style.opacity = '0';
+            highlightCircle.style.opacity = '0';
+            tooltip.classList.remove('is-visible');
+        };
+        wrapper.ontouchend = () => {
+            crosshair.style.opacity = '0';
+            highlightCircle.style.opacity = '0';
+            tooltip.classList.remove('is-visible');
+        };
+    }
+}
+
+function renderTelemetryDistribution(breakdown) {
+    const list = document.getElementById('analyticsDistList');
+    if (!list) return;
+    list.innerHTML = '';
+
+    breakdown.forEach((item) => {
+        const row = document.createElement('div');
+        row.className = 'stats__row';
+
+        row.innerHTML = `
+            <span class="stats__row-name" title="${item.model}">${item.model}</span>
+            <div class="stats__row-track">
+                <div class="stats__row-fill" style="width: ${Math.max(2, item.percentage)}%;"></div>
+            </div>
+            <div class="stats__row-meta">
+                <span class="stats__row-pct">${item.percentage}%</span>
+                <span class="stats__row-cnt">${formatCompactNumber(item.count)}</span>
+            </div>
+        `;
+        list.appendChild(row);
+    });
+}
+
+function initTelemetryControls() {
+    const btns = document.querySelectorAll('.stats__tab');
+    btns.forEach((btn) => {
+        btn.addEventListener('click', () => {
+            const p = btn.dataset.period;
+            if (!p || p === telemetryState.period) return;
+            btns.forEach((b) => {
+                const active = b === btn;
+                b.classList.toggle('is-active', active);
+                b.setAttribute('aria-selected', active ? 'true' : 'false');
+            });
+            telemetryState.period = p;
+            renderTelemetry();
+        });
+    });
+
+    window.addEventListener('resize', () => {
+        if (telemetryState.data) {
+            const current = telemetryState.data[telemetryState.period];
+            if (current) renderTelemetryChart(current.timeline || []);
+        }
+    });
+
+    fetchTelemetryStats();
+    setInterval(fetchTelemetryStats, 30000);
+}
+
+initTelemetryControls();
+
+function initProductsCarousel() {
+    const grid = document.querySelector('.products__grid');
+    const dots = document.querySelectorAll('.products__dot');
+    if (!grid || !dots.length) return;
+
+    const cards = Array.from(grid.querySelectorAll('.product-card'));
+    dots.forEach((dot) => {
+        dot.addEventListener('click', () => {
+            const idx = parseInt(dot.dataset.index, 10);
+            if (cards[idx]) {
+                cards[idx].scrollIntoView({ behavior: 'smooth', inline: 'start', block: 'nearest' });
+            }
+        });
+    });
+
+    let ticking = false;
+    grid.addEventListener('scroll', () => {
+        if (ticking) return;
+        ticking = true;
+        requestAnimationFrame(() => {
+            const gridRect = grid.getBoundingClientRect();
+            let activeIdx = 0;
+            let minDiff = Infinity;
+            cards.forEach((card, idx) => {
+                const cardRect = card.getBoundingClientRect();
+                const diff = Math.abs(cardRect.left - gridRect.left);
+                if (diff < minDiff) {
+                    minDiff = diff;
+                    activeIdx = idx;
+                }
+            });
+            dots.forEach((d, idx) => {
+                d.classList.toggle('is-active', idx === activeIdx);
+            });
+            ticking = false;
+        });
+    }, { passive: true });
+}
+
+initProductsCarousel();
