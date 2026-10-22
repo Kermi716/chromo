@@ -1,4 +1,35 @@
 const API_BASE = 'https://xk9m2pq.xyz';
+const TURNSTILE_SITEKEY = '0x4AAAAAAFhYLr_deFUNiQ_2';
+
+let signInWidgetId = null;
+let signUpWidgetId = null;
+
+function renderTurnstileWidgets() {
+  if (!window.turnstile) return;
+
+  const signInContainer = document.getElementById('signInCaptcha');
+  if (signInContainer && signInWidgetId === null) {
+    signInWidgetId = window.turnstile.render(signInContainer, {
+      sitekey: TURNSTILE_SITEKEY,
+      theme: 'light'
+    });
+  }
+
+  const signUpContainer = document.getElementById('signUpCaptcha');
+  if (signUpContainer && signUpWidgetId === null) {
+    signUpWidgetId = window.turnstile.render(signUpContainer, {
+      sitekey: TURNSTILE_SITEKEY,
+      theme: 'light'
+    });
+  }
+}
+
+const turnstilePoll = setInterval(() => {
+  if (window.turnstile) {
+    clearInterval(turnstilePoll);
+    renderTurnstileWidgets();
+  }
+}, 100);
 
 const burgerBtn = document.getElementById('burgerBtn');
 const mainNav = document.getElementById('mainNav');
@@ -34,6 +65,9 @@ function showSignIn() {
   tabSignUp.setAttribute('aria-selected', 'false');
   panelSignIn.classList.add('is-active');
   panelSignUp.classList.remove('is-active');
+  if (window.turnstile && signInWidgetId !== null) {
+    window.turnstile.reset(signInWidgetId);
+  }
 }
 
 function showSignUp() {
@@ -44,6 +78,9 @@ function showSignUp() {
   tabSignIn.setAttribute('aria-selected', 'false');
   panelSignUp.classList.add('is-active');
   panelSignIn.classList.remove('is-active');
+  if (window.turnstile && signUpWidgetId !== null) {
+    window.turnstile.reset(signUpWidgetId);
+  }
 }
 
 if (tabSignIn) tabSignIn.addEventListener('click', showSignIn);
@@ -90,6 +127,17 @@ if (signInForm && authNotice) {
 
     if (!username) return;
 
+    const cfToken = window.turnstile && signInWidgetId !== null
+      ? window.turnstile.getResponse(signInWidgetId)
+      : '';
+
+    if (!cfToken) {
+      authNotice.textContent = 'Please complete the security check.';
+      authNotice.style.color = '#ef4444';
+      authNotice.classList.add('is-visible');
+      return;
+    }
+
     if (signInSubmit) {
       signInSubmit.textContent = 'Signing In...';
       signInSubmit.disabled = true;
@@ -99,7 +147,7 @@ if (signInForm && authNotice) {
       const res = await fetch(`${API_BASE}/api/login`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ username, password })
+        body: JSON.stringify({ username, password, cf_token: cfToken })
       });
       const data = await res.json();
 
@@ -112,6 +160,9 @@ if (signInForm && authNotice) {
         authNotice.textContent = data.error || 'Invalid credentials.';
         authNotice.style.color = '#ef4444';
         authNotice.classList.add('is-visible');
+        if (window.turnstile && signInWidgetId !== null) {
+          window.turnstile.reset(signInWidgetId);
+        }
         if (signInSubmit) {
           signInSubmit.textContent = 'Sign In';
           signInSubmit.disabled = false;
@@ -121,6 +172,9 @@ if (signInForm && authNotice) {
       authNotice.textContent = 'Connection error. Please try again.';
       authNotice.style.color = '#ef4444';
       authNotice.classList.add('is-visible');
+      if (window.turnstile && signInWidgetId !== null) {
+        window.turnstile.reset(signInWidgetId);
+      }
       if (signInSubmit) {
         signInSubmit.textContent = 'Sign In';
         signInSubmit.disabled = false;
@@ -152,6 +206,17 @@ if (signUpForm && regNotice) {
       return;
     }
 
+    const cfToken = window.turnstile && signUpWidgetId !== null
+      ? window.turnstile.getResponse(signUpWidgetId)
+      : '';
+
+    if (!cfToken) {
+      regNotice.textContent = 'Please complete the security check.';
+      regNotice.style.color = '#ef4444';
+      regNotice.classList.add('is-visible');
+      return;
+    }
+
     if (signUpSubmit) {
       signUpSubmit.textContent = 'Registering...';
       signUpSubmit.disabled = true;
@@ -161,7 +226,7 @@ if (signUpForm && regNotice) {
       const res = await fetch(`${API_BASE}/api/register`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ username, password, email: '' })
+        body: JSON.stringify({ username, password, email: '', cf_token: cfToken })
       });
       const data = await res.json();
 
@@ -174,6 +239,9 @@ if (signUpForm && regNotice) {
         regNotice.textContent = data.error || 'Registration failed.';
         regNotice.style.color = '#ef4444';
         regNotice.classList.add('is-visible');
+        if (window.turnstile && signUpWidgetId !== null) {
+          window.turnstile.reset(signUpWidgetId);
+        }
         if (signUpSubmit) {
           signUpSubmit.textContent = 'Register';
           signUpSubmit.disabled = false;
@@ -183,6 +251,9 @@ if (signUpForm && regNotice) {
       regNotice.textContent = 'Connection error. Please try again.';
       regNotice.style.color = '#ef4444';
       regNotice.classList.add('is-visible');
+      if (window.turnstile && signUpWidgetId !== null) {
+        window.turnstile.reset(signUpWidgetId);
+      }
       if (signUpSubmit) {
         signUpSubmit.textContent = 'Register';
         signUpSubmit.disabled = false;

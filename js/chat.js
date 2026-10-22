@@ -53,7 +53,7 @@ const MODEL_TIERS = {
     'Chat GPT Sol 5.6': 'Free',
     'Gemini 4.0': 'Spark',
     'Chat GPT Astra 6.1': 'Pulse',
-    'Claude 5.5 Sonet': 'Pulse',
+    'Claude 5.5 Sonnet': 'Pulse',
     'Claude 5.1 Fable': 'Pulse',
     'Claude 5.5 Opus': 'Pulse'
 };

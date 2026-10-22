@@ -172,7 +172,7 @@ const MODEL_TIERS = {
     'Chat GPT Sol 5.6': 'Free',
     'Gemini 4.0': 'Spark',
     'Chat GPT Astra 6.1': 'Pulse',
-    'Claude 5.5 Sonet': 'Pulse',
+    'Claude 5.5 Sonnet': 'Pulse',
     'Claude 5.1 Fable': 'Pulse',
     'Claude 5.5 Opus': 'Pulse'
 };
@@ -1124,7 +1124,7 @@ updateAuthUI();
 
 const MODEL_BRAND_COLORS = {
     'Claude 5.5 Opus': { color: '#d97706', gradient: 'linear-gradient(90deg, #d97706, #ea580c)' },
-    'Claude 5.5 Sonet': { color: '#f59e0b', gradient: 'linear-gradient(90deg, #f59e0b, #d97706)' },
+    'Claude 5.5 Sonnet': { color: '#f59e0b', gradient: 'linear-gradient(90deg, #f59e0b, #d97706)' },
     'Claude 5.1 Fable': { color: '#b45309', gradient: 'linear-gradient(90deg, #b45309, #92400e)' },
     'Gemini 4.0': { color: '#2563eb', gradient: 'linear-gradient(90deg, #2563eb, #3b82f6)' },
     'Gemini 3.8 Flash': { color: '#0284c7', gradient: 'linear-gradient(90deg, #0284c7, #38bdf8)' },
@@ -1154,7 +1154,7 @@ function generateFallbackTelemetry() {
         { model: 'Claude 5.5 Opus', vendor: 'Anthropic Frontier', wWeight: 0.35, mWeight: 0.33, yWeight: 0.31 },
         { model: 'Gemini 3.8 Flash', vendor: 'Google DeepMind', wWeight: 0.24, mWeight: 0.25, yWeight: 0.23 },
         { model: 'Chat GPT Astra 6.1', vendor: 'OpenAI Frontier', wWeight: 0.18, mWeight: 0.17, yWeight: 0.18 },
-        { model: 'Claude 5.5 Sonet', vendor: 'Anthropic Frontier', wWeight: 0.10, mWeight: 0.11, yWeight: 0.12 },
+        { model: 'Claude 5.5 Sonnet', vendor: 'Anthropic Frontier', wWeight: 0.10, mWeight: 0.11, yWeight: 0.12 },
         { model: 'Gemini 4.0', vendor: 'Google DeepMind', wWeight: 0.07, mWeight: 0.08, yWeight: 0.09 },
         { model: 'Chat GPT Sol 5.6', vendor: 'OpenAI Frontier', wWeight: 0.04, mWeight: 0.04, yWeight: 0.04 },
         { model: 'Claude 5.1 Fable', vendor: 'Anthropic Frontier', wWeight: 0.02, mWeight: 0.02, yWeight: 0.03 }

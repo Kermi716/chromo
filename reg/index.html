@@ -16,6 +16,7 @@
   <link rel="stylesheet" href="../css/main.css">
   <link rel="stylesheet" href="../css/reg.css">
   <script src="../js/security.js"></script>
+  <script src="https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit" async defer></script>
 </head>
 
 <body>
@@ -138,6 +139,8 @@
               </label>
             </div>
 
+            <div class="auth-captcha" id="signInCaptcha"></div>
+
             <button type="submit" class="auth-submit" id="signInSubmit">Sign In</button>
 
             <div class="auth-notice" id="authNotice" aria-live="polite"></div>
@@ -198,6 +201,8 @@
                 <span class="auth-checkbox-text">I agree to Terms &amp; Privacy Policy</span>
               </label>
             </div>
+
+            <div class="auth-captcha" id="signUpCaptcha"></div>
 
             <button type="submit" class="auth-submit" id="signUpSubmit">Register</button>
 

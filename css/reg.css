@@ -275,6 +275,15 @@
     color: #444444;
 }
 
+.auth-captcha {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 65px;
+    width: 100%;
+    overflow: hidden;
+}
+
 .auth-submit {
     width: 100%;
     height: 46px;
