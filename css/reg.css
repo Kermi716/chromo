@@ -323,6 +323,18 @@
     display: block;
 }
 
+.auth-notice.is-success {
+    background: rgba(16, 185, 129, 0.08);
+    border-color: rgba(16, 185, 129, 0.2);
+    color: #10b981;
+}
+
+.auth-notice.is-error {
+    background: rgba(239, 68, 68, 0.08);
+    border-color: rgba(239, 68, 68, 0.2);
+    color: #ef4444;
+}
+
 @keyframes noticeFade {
     0% {
         opacity: 0;

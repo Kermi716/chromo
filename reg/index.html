@@ -116,7 +116,7 @@
             <div class="auth-field">
               <div class="auth-field-header">
                 <label for="signInPassword" class="auth-label">Password</label>
-                <!-- <a href="#forgot" class="auth-forgot" id="forgotLink">Forgot password?</a> -->
+                <a href="#change-password" class="auth-forgot" id="forgotLink">Change password?</a>
               </div>
               <div class="auth-input-wrap">
                 <input type="password" id="signInPassword" class="auth-input" placeholder="Enter your password"
@@ -211,6 +211,76 @@
             <p class="auth-switch">
               Already have an account? <button type="button" class="auth-switch-btn" id="switchToSignIn">Sign
                 In</button>
+            </p>
+          </form>
+        </div>
+
+        <div class="auth-panel" id="panelChangePass" role="tabpanel">
+          <div class="auth-header">
+            <h1 class="auth-title">Change password</h1>
+            <p class="auth-subtitle">Enter your username and current password to set a new one</p>
+          </div>
+
+          <form class="auth-form" id="changePassForm" onsubmit="event.preventDefault()">
+            <div class="auth-field">
+              <label for="changeUsername" class="auth-label">Username</label>
+              <input type="text" id="changeUsername" class="auth-input" placeholder="Enter your username"
+                autocomplete="username" required>
+            </div>
+
+            <div class="auth-field">
+              <label for="changeOldPassword" class="auth-label">Current Password</label>
+              <div class="auth-input-wrap">
+                <input type="password" id="changeOldPassword" class="auth-input" placeholder="Enter current password"
+                  autocomplete="current-password" required>
+                <button type="button" class="auth-toggle-pass" aria-label="Toggle password visibility">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                    stroke-linejoin="round" class="eye-icon">
+                    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
+                    <circle cx="12" cy="12" r="3" />
+                  </svg>
+                </button>
+              </div>
+            </div>
+
+            <div class="auth-field">
+              <label for="changeNewPassword" class="auth-label">New Password</label>
+              <div class="auth-input-wrap">
+                <input type="password" id="changeNewPassword" class="auth-input" placeholder="At least 8 characters"
+                  autocomplete="new-password" required>
+                <button type="button" class="auth-toggle-pass" aria-label="Toggle password visibility">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                    stroke-linejoin="round" class="eye-icon">
+                    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8z" />
+                    <circle cx="12" cy="12" r="3" />
+                  </svg>
+                </button>
+              </div>
+            </div>
+
+            <div class="auth-field">
+              <label for="changeConfirmPassword" class="auth-label">Confirm New Password</label>
+              <div class="auth-input-wrap">
+                <input type="password" id="changeConfirmPassword" class="auth-input" placeholder="Repeat new password"
+                  autocomplete="new-password" required>
+                <button type="button" class="auth-toggle-pass" aria-label="Toggle password visibility">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                    stroke-linejoin="round" class="eye-icon">
+                    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8z" />
+                    <circle cx="12" cy="12" r="3" />
+                  </svg>
+                </button>
+              </div>
+            </div>
+
+            <div class="auth-captcha" id="changePassCaptcha"></div>
+
+            <button type="submit" class="auth-submit" id="changePassSubmit">Change Password</button>
+
+            <div class="auth-notice" id="changePassNotice" aria-live="polite"></div>
+
+            <p class="auth-switch">
+              Back to <button type="button" class="auth-switch-btn" id="switchToSignInFromChange">Sign In</button>
             </p>
           </form>
         </div>
