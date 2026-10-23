@@ -75,6 +75,16 @@
             </nav>
 
             <div class="header__actions">
+                <div class="header__spark-promo" id="headerSparkPromo" aria-label="Try Spark Free">
+                    <div class="header__spark-promo-glare" aria-hidden="true"></div>
+                    <span class="header__spark-promo-text">Try <span class="spark-promo__sparkle">Spark</span> Free</span>
+                    <button type="button" class="header__spark-promo-btn" id="headerSparkPromoClaimBtn">
+                        <span>Claim</span>
+                        <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                            <path d="M5 15L15 5M15 5H7.5M15 5V12.5"></path>
+                        </svg>
+                    </button>
+                </div>
                 <div class="header__account-wrapper">
                     <a href="reg/" class="header__account" id="headerAccountBtn" aria-label="Sign in or register"
                         title="Sign in or register">
@@ -121,6 +131,24 @@
             </div>
         </div>
     </header>
+
+    <div class="spark-promo-wrap" id="sparkPromoWrap" aria-live="polite">
+        <div class="container">
+            <div class="spark-promo">
+                <div class="spark-promo__glare" aria-hidden="true"></div>
+                <div class="spark-promo__content">
+                    <span class="spark-promo__text">Try <span class="spark-promo__sparkle">Spark</span> Free</span>
+                    <span class="spark-promo__period">for 1 month</span>
+                </div>
+                <button type="button" class="spark-promo__btn" id="sparkPromoClaimBtn">
+                    <span>Claim</span>
+                    <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                        <path d="M5 15L15 5M15 5H7.5M15 5V12.5"></path>
+                    </svg>
+                </button>
+            </div>
+        </div>
+    </div>
 
     <main class="main">
         <div class="container main__inner">
@@ -249,6 +277,28 @@
                 <div class="stats__breakdown">
                     <div class="stats__breakdown-head">Usage Breakdown</div>
                     <div class="stats__list" id="analyticsDistList"></div>
+                </div>
+            </section>
+
+            <section class="ai-banner">
+                <div class="ai-banner__glare" aria-hidden="true"></div>
+                <div class="ai-banner__visual">
+                    <div class="ai-banner__visual-glow" aria-hidden="true"></div>
+                    <div class="ai-banner__visual-frame">
+                        <img src="assets/pictures/ai (1).png" alt="ChatGPT" class="ai-banner__logo">
+                        <img src="assets/pictures/ai (2).png" alt="Claude" class="ai-banner__logo">
+                        <img src="assets/pictures/ai (3).png" alt="Gemini" class="ai-banner__logo">
+                    </div>
+                </div>
+                <div class="ai-banner__content">
+                    <h2 class="ai-banner__title">Access to Top Neural Networks</h2>
+                    <p class="ai-banner__desc">ChatGPT, Claude, and Gemini in a single unified interface. Switch seamlessly between leading AI models with no separate subscriptions.</p>
+                    <a href="chat/" class="ai-banner__btn">
+                        <span>Try Now</span>
+                        <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M5 15L15 5M15 5H7.5M15 5V12.5"></path>
+                        </svg>
+                    </a>
                 </div>
             </section>
 

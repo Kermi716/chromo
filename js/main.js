@@ -228,7 +228,10 @@ function updateModelSelectPermissions() {
 
 async function syncUserProfile() {
     const user = getCurrentUser();
-    if (!user) return;
+    if (!user) {
+        checkSparkPromoEligibility();
+        return;
+    }
     try {
         const res = await fetch(`${API_BASE}/api/user?username=${encodeURIComponent(user)}`);
         const data = await res.json();
@@ -240,8 +243,18 @@ async function syncUserProfile() {
             if (tierText) tierText.textContent = data.subscription + ' Member';
             updateModelSelectPermissions();
         }
+        if (data.ok) {
+            if (sessionStorage.getItem('chromo_pending_spark_claim') === 'true' && !data.spark_trial_claimed) {
+                sessionStorage.removeItem('chromo_pending_spark_claim');
+                claimSparkTrialForUser(user);
+            } else {
+                checkSparkPromoEligibility(data);
+            }
+        }
         fetchLimitsPreview();
-    } catch (e) {}
+    } catch (e) {
+        checkSparkPromoEligibility();
+    }
 }
 
 async function fetchLimitsPreview() {
@@ -335,7 +348,147 @@ function updateAuthUI() {
         }
         updateModelSelectPermissions();
         fetchLimitsPreview();
+        checkSparkPromoEligibility();
     }
+}
+
+const sparkPromoWrap = document.getElementById('sparkPromoWrap');
+const sparkPromoClaimBtn = document.getElementById('sparkPromoClaimBtn');
+const headerSparkPromo = document.getElementById('headerSparkPromo');
+const headerSparkPromoClaimBtn = document.getElementById('headerSparkPromoClaimBtn');
+
+let sparkPromoEligible = false;
+
+function updateSparkPromoDockState() {
+    if (!sparkPromoEligible) return;
+    const isScrolled = window.scrollY > 45;
+    if (isScrolled) {
+        if (sparkPromoWrap) sparkPromoWrap.classList.add('is-docked');
+        if (headerSparkPromo) {
+            headerSparkPromo.style.display = 'inline-flex';
+            requestAnimationFrame(() => {
+                headerSparkPromo.classList.add('is-docked');
+            });
+        }
+    } else {
+        if (sparkPromoWrap) sparkPromoWrap.classList.remove('is-docked');
+        if (headerSparkPromo) {
+            headerSparkPromo.classList.remove('is-docked');
+            setTimeout(() => {
+                if (!headerSparkPromo.classList.contains('is-docked')) {
+                    headerSparkPromo.style.display = 'none';
+                }
+            }, 250);
+        }
+    }
+}
+
+window.addEventListener('scroll', updateSparkPromoDockState, { passive: true });
+
+function hideSparkPromo() {
+    sparkPromoEligible = false;
+    if (sparkPromoWrap) {
+        sparkPromoWrap.classList.remove('is-visible', 'is-docked');
+        setTimeout(() => {
+            if (!sparkPromoWrap.classList.contains('is-visible')) {
+                sparkPromoWrap.style.display = 'none';
+            }
+        }, 250);
+    }
+    if (headerSparkPromo) {
+        headerSparkPromo.classList.remove('is-docked');
+        setTimeout(() => {
+            headerSparkPromo.style.display = 'none';
+        }, 250);
+    }
+}
+
+function showSparkPromo() {
+    sparkPromoEligible = true;
+    if (sparkPromoWrap) {
+        sparkPromoWrap.style.display = 'block';
+        requestAnimationFrame(() => {
+            sparkPromoWrap.classList.add('is-visible');
+            updateSparkPromoDockState();
+        });
+    }
+}
+
+function checkSparkPromoEligibility(userData) {
+    const user = getCurrentUser();
+    const claimedStorage = localStorage.getItem('chromo_spark_trial_claimed') || (user ? localStorage.getItem('chromo_spark_trial_claimed_' + user) : null);
+    if (claimedStorage === 'true' || (userData && userData.spark_trial_claimed)) {
+        if (user) localStorage.setItem('chromo_spark_trial_claimed_' + user, 'true');
+        localStorage.setItem('chromo_spark_trial_claimed', 'true');
+        hideSparkPromo();
+        return;
+    }
+    const currentSub = (userData && userData.subscription ? userData.subscription : (localStorage.getItem('chromo_sub') || 'Free')).trim();
+    if (currentSub !== 'Free') {
+        hideSparkPromo();
+        return;
+    }
+    showSparkPromo();
+}
+
+async function claimSparkTrialForUser(user) {
+    if (!user) return;
+    const btns = [sparkPromoClaimBtn, headerSparkPromoClaimBtn].filter(Boolean);
+    btns.forEach(btn => {
+        btn.disabled = true;
+        btn.textContent = 'Activating...';
+    });
+    try {
+        const res = await fetch(`${API_BASE}/api/claim-spark-trial`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ username: user })
+        });
+        const data = await res.json();
+        if (data.ok) {
+            localStorage.setItem('chromo_spark_trial_claimed_' + user, 'true');
+            localStorage.setItem('chromo_spark_trial_claimed', 'true');
+            localStorage.setItem('chromo_sub', data.subscription || 'Spark');
+            btns.forEach(btn => {
+                btn.textContent = 'Claimed!';
+                btn.style.backgroundColor = '#10b981';
+            });
+            syncUserProfile();
+            if (typeof showCenterToast === 'function') {
+                showCenterToast('Spark Activated', '1 month of Spark subscription has been activated for your account.');
+            }
+            setTimeout(() => {
+                hideSparkPromo();
+            }, 1200);
+        } else {
+            btns.forEach(btn => {
+                btn.textContent = data.error || 'Failed';
+                btn.style.backgroundColor = '#ef4444';
+            });
+        }
+    } catch (err) {
+        btns.forEach(btn => {
+            btn.textContent = 'Error';
+            btn.style.backgroundColor = '#ef4444';
+        });
+    }
+}
+
+function handleSparkClaimClick() {
+    const user = getCurrentUser();
+    if (!user) {
+        sessionStorage.setItem('chromo_pending_spark_claim', 'true');
+        window.location.href = 'reg/';
+        return;
+    }
+    claimSparkTrialForUser(user);
+}
+
+if (sparkPromoClaimBtn) {
+    sparkPromoClaimBtn.addEventListener('click', handleSparkClaimClick);
+}
+if (headerSparkPromoClaimBtn) {
+    headerSparkPromoClaimBtn.addEventListener('click', handleSparkClaimClick);
 }
 
 if (headerAccountBtn) {
@@ -1405,21 +1558,35 @@ function renderTelemetryChart(timeline) {
     svg.appendChild(chartClippedGroup);
 
     const labelsGroup = document.createElementNS('http://www.w3.org/2000/svg', 'g');
-    const maxLabels = timeline.length <= 12 ? timeline.length : 8;
-    const step = Math.ceil(timeline.length / maxLabels);
+    const totalPts = targetPts.length;
+    const maxLabels = Math.min(totalPts, Math.max(2, Math.floor(plotW / 65)));
+    const chosenIndices = [];
 
-    targetPts.forEach((p, idx) => {
-        if (idx % step === 0 || idx === targetPts.length - 1) {
-            const txt = document.createElementNS('http://www.w3.org/2000/svg', 'text');
-            txt.setAttribute('x', String(p.x));
-            txt.setAttribute('y', String(height - 10));
-            txt.setAttribute('text-anchor', 'middle');
-            txt.setAttribute('font-size', '11');
-            txt.setAttribute('fill', '#8e8e93');
-            txt.setAttribute('font-family', 'inherit');
-            txt.textContent = p.pt.label || '';
-            labelsGroup.appendChild(txt);
+    if (totalPts <= maxLabels) {
+        for (let i = 0; i < totalPts; i++) chosenIndices.push(i);
+    } else {
+        for (let i = 0; i < maxLabels; i++) {
+            const idx = Math.round((i * (totalPts - 1)) / (maxLabels - 1));
+            if (!chosenIndices.includes(idx)) {
+                chosenIndices.push(idx);
+            }
         }
+    }
+
+    chosenIndices.forEach((idx, i) => {
+        const p = targetPts[idx];
+        const txt = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+        txt.setAttribute('x', String(p.x));
+        txt.setAttribute('y', String(height - 10));
+        let anchor = 'middle';
+        if (i === 0 && p.x - padL < 15) anchor = 'start';
+        else if (i === chosenIndices.length - 1 && (width - padR) - p.x < 15) anchor = 'end';
+        txt.setAttribute('text-anchor', anchor);
+        txt.setAttribute('font-size', '11');
+        txt.setAttribute('fill', '#8e8e93');
+        txt.setAttribute('font-family', 'inherit');
+        txt.textContent = p.pt.label || '';
+        labelsGroup.appendChild(txt);
     });
     svg.appendChild(labelsGroup);
 

@@ -206,6 +206,19 @@ if (signInForm && authNotice) {
         localStorage.setItem('chromo_user', data.username);
         if (data.token) localStorage.setItem('chromo_token', data.token);
         if (data.subscription) localStorage.setItem('chromo_sub', data.subscription);
+        if (sessionStorage.getItem('chromo_pending_spark_claim') === 'true') {
+          try {
+            await fetch(`${API_BASE}/api/claim-spark-trial`, {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ username: data.username })
+            });
+            localStorage.setItem('chromo_spark_trial_claimed_' + data.username, 'true');
+            localStorage.setItem('chromo_spark_trial_claimed', 'true');
+            localStorage.setItem('chromo_sub', 'Spark');
+            sessionStorage.removeItem('chromo_pending_spark_claim');
+          } catch (e) {}
+        }
         triggerWelcomeRedirect();
       } else {
         authNotice.textContent = data.error || 'Invalid credentials.';
@@ -285,6 +298,19 @@ if (signUpForm && regNotice) {
         localStorage.setItem('chromo_user', data.username);
         if (data.token) localStorage.setItem('chromo_token', data.token);
         if (data.subscription) localStorage.setItem('chromo_sub', data.subscription);
+        if (sessionStorage.getItem('chromo_pending_spark_claim') === 'true') {
+          try {
+            await fetch(`${API_BASE}/api/claim-spark-trial`, {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ username: data.username })
+            });
+            localStorage.setItem('chromo_spark_trial_claimed_' + data.username, 'true');
+            localStorage.setItem('chromo_spark_trial_claimed', 'true');
+            localStorage.setItem('chromo_sub', 'Spark');
+            sessionStorage.removeItem('chromo_pending_spark_claim');
+          } catch (e) {}
+        }
         triggerWelcomeRedirect();
       } else {
         regNotice.textContent = data.error || 'Registration failed.';
