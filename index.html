@@ -4,16 +4,16 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Chromo</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
-  <link rel="stylesheet" href="css/style.css">
   <link rel="apple-touch-icon" sizes="180x180" href="favico/apple-touch-icon.png">
   <link rel="icon" type="image/png" sizes="32x32" href="favico/favicon-32x32.png">
   <link rel="icon" type="image/png" sizes="16x16" href="favico/favicon-16x16.png">
   <link rel="icon" href="favico/favicon.ico" type="image/x-icon">
   <link rel="manifest" href="favico/site.webmanifest">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+  <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
   <canvas class="bg" id="bg" aria-hidden="true"></canvas>
@@ -50,14 +50,18 @@
           <button class="btn" id="pay-btn" type="button" disabled>Оплатить</button>
 
           <div class="order" id="order-box" hidden>
-            <div class="order-head">
+            <div class="order-head" id="order-head">
+              <i class="fa-solid fa-spinner fa-spin" id="order-icon"></i>
               <span id="order-status">Ожидание оплаты</span>
-              <span id="order-spin">|</span>
             </div>
-            <div class="key-out" id="order-key" hidden></div>
+            <div class="key-row" id="order-key-row" hidden>
+              <span class="key-val" id="order-key"></span>
+              <button class="copy-btn" id="copy-key" type="button" title="Копировать">
+                <i class="fa-regular fa-copy"></i>
+              </button>
+            </div>
             <div class="actions" id="order-actions" hidden>
-              <button class="btn-sec" id="copy-key" type="button">Копировать</button>
-              <a class="btn-sec" id="order-dl" href="#">Скачать chromo.lua</a>
+              <a class="btn-sec" id="order-dl" href="#"><i class="fa-solid fa-download"></i>Скачать chromo.lua</a>
             </div>
           </div>
         </div>
@@ -75,7 +79,7 @@
           <div class="order" id="key-box" hidden>
             <div class="order-head ok" id="key-info"></div>
             <div class="actions">
-              <a class="btn-sec" id="key-dl" href="#">Скачать chromo.lua</a>
+              <a class="btn-sec" id="key-dl" href="#"><i class="fa-solid fa-download"></i>Скачать chromo.lua</a>
             </div>
             <div class="install">1. Закинь chromo.lua в папку moonloader.<br>2. Зайди в игру, открой меню и вставь ключ.</div>
           </div>

@@ -1,6 +1,5 @@
 const API = "https://api.chromo-ltd.xyz";
 const CHARS = " .,:;+*?%S#@";
-const SPIN = ["|", "/", "-", "\\"];
 
 const FONT = {
   C: [" 111 ", "1   1", "1    ", "1    ", "1    ", "1   1", " 111 "],
@@ -19,7 +18,6 @@ const state = {
   payWidget: null,
   keyWidget: null,
   poll: null,
-  spinTimer: null,
 };
 
 const bgCanvas = document.getElementById("bg");
@@ -28,8 +26,10 @@ const methodsEl = document.getElementById("methods");
 const methodNote = document.getElementById("method-note");
 const payBtn = document.getElementById("pay-btn");
 const orderBox = document.getElementById("order-box");
-const orderSpin = document.getElementById("order-spin");
+const orderHead = document.getElementById("order-head");
+const orderIcon = document.getElementById("order-icon");
 const orderStatus = document.getElementById("order-status");
+const orderKeyRow = document.getElementById("order-key-row");
 const orderKey = document.getElementById("order-key");
 const orderActions = document.getElementById("order-actions");
 const orderDl = document.getElementById("order-dl");
@@ -258,7 +258,7 @@ function renderOptions() {
     const btn = document.createElement("button");
     btn.type = "button";
     btn.className = "item" + (active ? " active" : "");
-    btn.innerHTML = "<span>" + p.label + "</span><span class=\"price mono\">" + p.price_rub + " ₽</span>";
+    btn.innerHTML = "<span>" + p.label + "</span><span class=\"price\">" + p.price_rub + " ₽</span>";
     btn.addEventListener("click", () => {
       state.plan = p.id;
       renderOptions();
@@ -313,29 +313,15 @@ function syncPayUi() {
   }
 }
 
-function stopSpin() {
-  if (state.spinTimer) {
-    clearInterval(state.spinTimer);
-    state.spinTimer = null;
-  }
-}
-
 function startPolling(orderId) {
   if (state.poll) clearInterval(state.poll);
-  stopSpin();
 
   orderBox.hidden = false;
-  orderStatus.parentElement.classList.remove("ok");
+  orderHead.classList.remove("ok");
+  orderIcon.className = "fa-solid fa-spinner fa-spin";
   orderStatus.textContent = "Ожидание оплаты";
-  orderKey.hidden = true;
+  orderKeyRow.hidden = true;
   orderActions.hidden = true;
-
-  let spinIdx = 0;
-  orderSpin.textContent = SPIN[0];
-  state.spinTimer = setInterval(() => {
-    spinIdx = (spinIdx + 1) % SPIN.length;
-    orderSpin.textContent = SPIN[spinIdx];
-  }, 140);
 
   const check = async () => {
     try {
@@ -344,12 +330,11 @@ function startPolling(orderId) {
       if (data.status === "paid") {
         clearInterval(state.poll);
         state.poll = null;
-        stopSpin();
-        orderSpin.textContent = "OK";
-        orderStatus.parentElement.classList.add("ok");
-        orderStatus.textContent = "Оплачено (" + data.days + " дн.)";
+        orderHead.classList.add("ok");
+        orderIcon.className = "fa-solid fa-circle-check";
+        orderStatus.textContent = "Оплачено " + data.days + " дн.";
         orderKey.textContent = data.key;
-        orderKey.hidden = false;
+        orderKeyRow.hidden = false;
         orderDl.href = data.download_url;
         orderActions.hidden = false;
         notify("Оплата подтверждена", "ok");
@@ -416,10 +401,13 @@ payBtn.addEventListener("click", async () => {
 copyKeyBtn.addEventListener("click", async () => {
   try {
     await navigator.clipboard.writeText(orderKey.textContent);
-    copyKeyBtn.textContent = "Скопировано";
+    const icon = copyKeyBtn.querySelector("i");
+    copyKeyBtn.classList.add("done");
+    icon.className = "fa-solid fa-check";
     notify("Ключ скопирован", "ok");
     setTimeout(() => {
-      copyKeyBtn.textContent = "Копировать";
+      copyKeyBtn.classList.remove("done");
+      icon.className = "fa-regular fa-copy";
     }, 1500);
   } catch (_) {}
 });
@@ -460,7 +448,7 @@ checkBtn.addEventListener("click", async () => {
       return;
     }
 
-    keyInfo.textContent = "Активен: " + data.days_left + " дн. (" + data.status + ")";
+    keyInfo.innerHTML = "<i class=\"fa-solid fa-circle-check\"></i><span>Активен " + data.days_left + " дн. (" + data.status + ")</span>";
     keyDl.href = data.download_url;
     keyBox.hidden = false;
     checkBtn.disabled = false;
