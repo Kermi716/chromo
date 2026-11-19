@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Chromo</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="apple-touch-icon" sizes="180x180" href="favico/apple-touch-icon.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="favico/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="favico/favicon-16x16.png">
+  <link rel="icon" href="favico/favicon.ico" type="image/x-icon">
+  <link rel="manifest" href="favico/site.webmanifest">
+</head>
+<body>
+  <canvas class="bg" id="bg" aria-hidden="true"></canvas>
+
+  <div class="page">
+    <header class="top">
+      <div class="tabs">
+        <button class="tab active" data-tab="buy" type="button">Оплата</button>
+        <button class="tab" data-tab="key" type="button">Проверить ключ</button>
+      </div>
+      <nav class="nav">
+        <a id="bot-link" href="#" target="_blank" rel="noopener" hidden>Telegram бот</a>
+        <a id="support-link" href="#" target="_blank" rel="noopener" hidden>Поддержка</a>
+      </nav>
+    </header>
+
+    <main class="main">
+      <div class="panel">
+        <div class="pane active" id="pane-buy">
+          <div class="group">
+            <div class="label"><i class="fa-solid fa-tag"></i>Тариф</div>
+            <div class="grid-2" id="plans"></div>
+          </div>
+
+          <div class="group">
+            <div class="label"><i class="fa-solid fa-wallet"></i>Способ оплаты</div>
+            <div class="grid-2" id="methods"></div>
+          </div>
+
+          <div class="note" id="method-note" hidden></div>
+
+          <div class="cf-slot" id="cf-pay"></div>
+
+          <button class="btn" id="pay-btn" type="button" disabled>Оплатить</button>
+
+          <div class="order" id="order-box" hidden>
+            <div class="order-head">
+              <span id="order-status">Ожидание оплаты</span>
+              <span id="order-spin">|</span>
+            </div>
+            <div class="key-out" id="order-key" hidden></div>
+            <div class="actions" id="order-actions" hidden>
+              <button class="btn-sec" id="copy-key" type="button">Копировать</button>
+              <a class="btn-sec" id="order-dl" href="#">Скачать chromo.lua</a>
+            </div>
+          </div>
+        </div>
+
+        <div class="pane" id="pane-key">
+          <div class="group">
+            <div class="label"><i class="fa-solid fa-key"></i>Ключ подписки</div>
+            <input class="input" id="key-input" type="text" placeholder="Введите ключ" maxlength="19" autocomplete="off" spellcheck="false">
+          </div>
+
+          <div class="cf-slot" id="cf-key"></div>
+
+          <button class="btn" id="check-btn" type="button">Проверить</button>
+
+          <div class="order" id="key-box" hidden>
+            <div class="order-head ok" id="key-info"></div>
+            <div class="actions">
+              <a class="btn-sec" id="key-dl" href="#">Скачать chromo.lua</a>
+            </div>
+            <div class="install">1. Закинь chromo.lua в папку moonloader.<br>2. Зайди в игру, открой меню и вставь ключ.</div>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <div class="toasts" id="toasts"></div>
+  <script src="js/script.js"></script>
+</body>
+</html>
