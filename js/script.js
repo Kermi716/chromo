@@ -483,10 +483,17 @@ async function init() {
     renderOptions();
     loadTurnstile(state.cfg.turnstile_site_key);
 
-    const orderId = new URLSearchParams(location.search).get("order");
+    const params = new URLSearchParams(location.search);
+    let orderId = params.get("order");
+    const fkOrder = params.get("MERCHANT_ORDER_ID");
+    if (!orderId && fkOrder) {
+      const parts = fkOrder.split("_");
+      if (parts.length === 3) orderId = parts[2];
+    }
     if (orderId && /^[0-9a-f]{16}$/.test(orderId)) {
       startPolling(orderId);
-    }
+    } 
+    
   } catch (_) {
     notify("Сервер недоступен", "err");
   }
