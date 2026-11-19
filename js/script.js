@@ -1,3 +1,8 @@
+const _fk = new URLSearchParams(location.search).get("MERCHANT_ORDER_ID");
+if (_fk && _fk.split("_").length === 3 && _fk.split("_")[0] !== "0") {
+  location.replace("https://t.me/chromobuybot");
+}
+
 const API = "https://api.chromo-ltd.xyz";
 const CHARS = " .,:;+*?%S#@";
 
@@ -493,7 +498,7 @@ async function init() {
     if (orderId && /^[0-9a-f]{16}$/.test(orderId)) {
       startPolling(orderId);
     } 
-    
+
   } catch (_) {
     notify("Сервер недоступен", "err");
   }
