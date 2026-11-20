@@ -5,6 +5,7 @@ if (_fk && _fk.split("_").length === 3 && _fk.split("_")[0] !== "0") {
 
 const API = "https://api.chromo-ltd.xyz";
 const CHARS = " .,:;+*?%S#@";
+const CHECK_CD_KEY = "chromo_check_cd";
 
 const FONT = {
   C: [" 111 ", "1   1", "1    ", "1    ", "1    ", "1   1", " 111 "],
@@ -23,6 +24,7 @@ const state = {
   payWidget: null,
   keyWidget: null,
   poll: null,
+  checkTimer: null,
 };
 
 const bgCanvas = document.getElementById("bg");
@@ -42,6 +44,7 @@ const copyKeyBtn = document.getElementById("copy-key");
 
 const keyInput = document.getElementById("key-input");
 const checkBtn = document.getElementById("check-btn");
+const checkBtnDefaultText = checkBtn.textContent;
 const keyBox = document.getElementById("key-box");
 const keyInfo = document.getElementById("key-info");
 const keyDl = document.getElementById("key-dl");
@@ -351,6 +354,39 @@ function startPolling(orderId) {
   state.poll = setInterval(check, 4000);
 }
 
+function runCheckTimer(until) {
+  if (state.checkTimer) clearInterval(state.checkTimer);
+
+  const tick = () => {
+    const left = Math.ceil((until - Date.now()) / 1000);
+    if (left <= 0) {
+      clearInterval(state.checkTimer);
+      state.checkTimer = null;
+      checkBtn.disabled = false;
+      checkBtn.textContent = checkBtnDefaultText;
+      try {
+        localStorage.removeItem(CHECK_CD_KEY);
+      } catch (_) {}
+      return;
+    }
+    checkBtn.disabled = true;
+    checkBtn.textContent = "Подождите " + left + " сек.";
+  };
+
+  tick();
+  state.checkTimer = setInterval(tick, 500);
+}
+
+function startCheckCooldown(sec) {
+  const duration = Number(sec);
+  if (!Number.isFinite(duration) || duration <= 0) return;
+  const until = Date.now() + duration * 1000;
+  try {
+    localStorage.setItem(CHECK_CD_KEY, String(until));
+  } catch (_) {}
+  runCheckTimer(until);
+}
+
 payBtn.addEventListener("click", async () => {
   const plan = currentPlan();
   const method = currentMethod();
@@ -424,6 +460,8 @@ keyInput.addEventListener("input", () => {
 });
 
 checkBtn.addEventListener("click", async () => {
+  if (state.checkTimer) return;
+
   const key = keyInput.value.trim().toUpperCase();
   if (!/^[A-Z0-9]{4}(-[A-Z0-9]{4}){3}$/.test(key)) {
     notify("Формат: XXXX-XXXX-XXXX-XXXX", "err");
@@ -447,16 +485,20 @@ checkBtn.addEventListener("click", async () => {
     const data = await res.json();
     resetWidget("key");
 
+    if (data.retry_after) {
+      startCheckCooldown(data.retry_after);
+    } else {
+      checkBtn.disabled = false;
+    }
+
     if (!res.ok || !data.ok) {
       notify(data.error || "Ключ не найден", "err");
-      checkBtn.disabled = false;
       return;
     }
 
     keyInfo.innerHTML = "<i class=\"fa-solid fa-circle-check\"></i><span>Активен " + data.days_left + " дн. (" + data.status + ")</span>";
     keyDl.href = data.download_url;
     keyBox.hidden = false;
-    checkBtn.disabled = false;
     notify("Ключ подтвержден", "ok");
   } catch (_) {
     resetWidget("key");
@@ -467,6 +509,11 @@ checkBtn.addEventListener("click", async () => {
 
 async function init() {
   startBg();
+
+  try {
+    const savedUntil = Number(localStorage.getItem(CHECK_CD_KEY) || 0);
+    if (savedUntil > Date.now()) runCheckTimer(savedUntil);
+  } catch (_) {}
 
   try {
     const res = await fetch(API + "/web/config");
@@ -497,8 +544,7 @@ async function init() {
     }
     if (orderId && /^[0-9a-f]{16}$/.test(orderId)) {
       startPolling(orderId);
-    } 
-
+    }
   } catch (_) {
     notify("Сервер недоступен", "err");
   }
