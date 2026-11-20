@@ -501,7 +501,8 @@ trialBtn.addEventListener("click", async () => {
     trialInfo.classList.toggle("ok", !expired);
     trialInfo.classList.toggle("err", expired);
     const icon = expired ? "fa-circle-xmark" : "fa-circle-check";
-    trialInfo.innerHTML = "<i class=\"fa-solid " + icon + "\"></i><span>" + data.status + "</span>";
+    const text = expired ? "Ключ " + data.status : data.status;
+    trialInfo.innerHTML = "<i class=\"fa-solid " + icon + "\"></i><span>" + text + "</span>";
     trialKey.textContent = data.key;
     trialDl.href = data.download_url;
     trialBox.hidden = false;
