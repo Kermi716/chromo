@@ -240,6 +240,14 @@ a {
   color: #4ade80;
 }
 
+.order-head.err {
+  color: #e4e4e7;
+}
+
+.order-head.err i {
+  color: #ef4444;
+}
+
 .key-row {
   display: flex;
   align-items: center;

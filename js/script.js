@@ -497,7 +497,11 @@ trialBtn.addEventListener("click", async () => {
       return;
     }
 
-    trialInfo.innerHTML = "<i class=\"fa-solid fa-circle-check\"></i><span>" + data.status + "</span>";
+    const expired = data.days_left <= 0;
+    trialInfo.classList.toggle("ok", !expired);
+    trialInfo.classList.toggle("err", expired);
+    const icon = expired ? "fa-circle-xmark" : "fa-circle-check";
+    trialInfo.innerHTML = "<i class=\"fa-solid " + icon + "\"></i><span>" + data.status + "</span>";
     trialKey.textContent = data.key;
     trialDl.href = data.download_url;
     trialBox.hidden = false;
@@ -555,7 +559,14 @@ checkBtn.addEventListener("click", async () => {
       return;
     }
 
-    keyInfo.innerHTML = "<i class=\"fa-solid fa-circle-check\"></i><span>Активен " + data.days_left + " дн. (" + data.status + ")</span>";
+    const expired = data.days_left <= 0;
+    keyInfo.classList.toggle("ok", !expired);
+    keyInfo.classList.toggle("err", expired);
+    const icon = expired ? "fa-circle-xmark" : "fa-circle-check";
+    const text = expired
+      ? "Ключ " + data.status
+      : "Активен " + data.days_left + " дн. (" + data.status + ")";
+    keyInfo.innerHTML = "<i class=\"fa-solid " + icon + "\"></i><span>" + text + "</span>";
     keyDl.href = data.download_url;
     keyBox.hidden = false;
     notify("Ключ подтвержден", "ok");
