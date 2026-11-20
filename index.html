@@ -22,6 +22,7 @@
     <header class="top">
       <div class="tabs">
         <button class="tab active" data-tab="buy" type="button">Оплата</button>
+        <button class="tab" data-tab="trial" type="button">Пробный период</button>
         <button class="tab" data-tab="key" type="button">Проверить ключ</button>
       </div>
       <nav class="nav">
@@ -66,6 +67,27 @@
           </div>
         </div>
 
+        <div class="pane" id="pane-trial">
+
+          <div class="cf-slot" id="cf-trial"></div>
+
+          <button class="btn" id="trial-btn" type="button">Получить ключ</button>
+
+          <div class="order" id="trial-box" hidden>
+            <div class="order-head ok" id="trial-info"></div>
+            <div class="key-row">
+              <span class="key-val" id="trial-key"></span>
+              <button class="copy-btn" id="copy-trial-key" type="button" title="Копировать">
+                <i class="fa-regular fa-copy"></i>
+              </button>
+            </div>
+            <div class="actions">
+              <a class="btn-sec" id="trial-dl" href="#"><i class="fa-solid fa-download"></i>Скачать chromo.lua</a>
+            </div>
+            <div class="install">1. Закинь chromo.lua в папку moonloader.<br>2. Зайди в игру, открой меню и вставь ключ.</div>
+          </div>
+        </div>
+
         <div class="pane" id="pane-key">
           <div class="group">
             <div class="label"><i class="fa-solid fa-key"></i>Ключ подписки</div>
@@ -89,6 +111,6 @@
   </div>
 
   <div class="toasts" id="toasts"></div>
-  <script src="js/script.js?v=2"></script>
+  <script src="js/script.js?v=3"></script>
 </body>
 </html>

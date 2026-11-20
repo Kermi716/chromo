@@ -1,8 +1,3 @@
-const _fk = new URLSearchParams(location.search).get("MERCHANT_ORDER_ID");
-if (_fk && _fk.split("_").length === 3 && _fk.split("_")[0] !== "0") {
-  location.replace("https://t.me/chromobuybot");
-}
-
 const API = "https://api.chromo-ltd.xyz";
 const CHARS = " .,:;+*?%S#@";
 const CHECK_CD_KEY = "chromo_check_cd";
@@ -20,8 +15,10 @@ const state = {
   plan: null,
   method: null,
   cfPay: "",
+  cfTrial: "",
   cfKey: "",
   payWidget: null,
+  trialWidget: null,
   keyWidget: null,
   poll: null,
   checkTimer: null,
@@ -41,6 +38,13 @@ const orderKey = document.getElementById("order-key");
 const orderActions = document.getElementById("order-actions");
 const orderDl = document.getElementById("order-dl");
 const copyKeyBtn = document.getElementById("copy-key");
+
+const trialBtn = document.getElementById("trial-btn");
+const trialBox = document.getElementById("trial-box");
+const trialInfo = document.getElementById("trial-info");
+const trialKey = document.getElementById("trial-key");
+const trialDl = document.getElementById("trial-dl");
+const copyTrialKeyBtn = document.getElementById("copy-trial-key");
 
 const keyInput = document.getElementById("key-input");
 const checkBtn = document.getElementById("check-btn");
@@ -70,6 +74,22 @@ function notify(text, kind = "info") {
 
   const timer = setTimeout(close, kind === "err" ? 4000 : 2800);
   el.addEventListener("click", close);
+}
+
+function bindCopy(btn, sourceEl) {
+  btn.addEventListener("click", async () => {
+    try {
+      await navigator.clipboard.writeText(sourceEl.textContent);
+      const icon = btn.querySelector("i");
+      btn.classList.add("done");
+      icon.className = "fa-solid fa-check";
+      notify("Ключ скопирован", "ok");
+      setTimeout(() => {
+        btn.classList.remove("done");
+        icon.className = "fa-regular fa-copy";
+      }, 1500);
+    } catch (_) {}
+  });
 }
 
 function buildMask(word, cols, rows) {
@@ -223,6 +243,16 @@ function loadTurnstile(siteKey) {
         state.cfPay = "";
       },
     });
+    state.trialWidget = window.turnstile.render("#cf-trial", {
+      sitekey: siteKey,
+      theme: "dark",
+      callback: (t) => {
+        state.cfTrial = t;
+      },
+      "expired-callback": () => {
+        state.cfTrial = "";
+      },
+    });
     state.keyWidget = window.turnstile.render("#cf-key", {
       sitekey: siteKey,
       theme: "dark",
@@ -242,6 +272,10 @@ function resetWidget(kind) {
   if (kind === "pay" && state.payWidget !== null) {
     state.cfPay = "";
     window.turnstile.reset(state.payWidget);
+  }
+  if (kind === "trial" && state.trialWidget !== null) {
+    state.cfTrial = "";
+    window.turnstile.reset(state.trialWidget);
   }
   if (kind === "key" && state.keyWidget !== null) {
     state.cfKey = "";
@@ -439,19 +473,44 @@ payBtn.addEventListener("click", async () => {
   }
 });
 
-copyKeyBtn.addEventListener("click", async () => {
+trialBtn.addEventListener("click", async () => {
+  if (state.cfg && state.cfg.turnstile_site_key && !state.cfTrial) {
+    notify("Пройди проверку капчи", "err");
+    return;
+  }
+
+  trialBtn.disabled = true;
+  notify("Выдача ключа...", "info");
+
   try {
-    await navigator.clipboard.writeText(orderKey.textContent);
-    const icon = copyKeyBtn.querySelector("i");
-    copyKeyBtn.classList.add("done");
-    icon.className = "fa-solid fa-check";
-    notify("Ключ скопирован", "ok");
-    setTimeout(() => {
-      copyKeyBtn.classList.remove("done");
-      icon.className = "fa-regular fa-copy";
-    }, 1500);
-  } catch (_) {}
+    const res = await fetch(API + "/web/trial", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ cf_token: state.cfTrial }),
+    });
+    const data = await res.json();
+    resetWidget("trial");
+    trialBtn.disabled = false;
+
+    if (!res.ok || !data.ok) {
+      notify(data.error || "Ошибка выдачи ключа", "err");
+      return;
+    }
+
+    trialInfo.innerHTML = "<i class=\"fa-solid fa-circle-check\"></i><span>" + data.status + "</span>";
+    trialKey.textContent = data.key;
+    trialDl.href = data.download_url;
+    trialBox.hidden = false;
+    notify(data.is_new ? "Пробный ключ выдан" : "Показан ранее выданный ключ", "ok");
+  } catch (_) {
+    resetWidget("trial");
+    trialBtn.disabled = false;
+    notify("Нет связи с сервером", "err");
+  }
 });
+
+bindCopy(copyKeyBtn, orderKey);
+bindCopy(copyTrialKeyBtn, trialKey);
 
 keyInput.addEventListener("input", () => {
   const raw = keyInput.value.toUpperCase().replace(/[^A-Z0-9]/g, "").slice(0, 16);
@@ -519,6 +578,13 @@ async function init() {
     const res = await fetch(API + "/web/config");
     state.cfg = await res.json();
 
+    const params = new URLSearchParams(location.search);
+    const fkOrder = params.get("MERCHANT_ORDER_ID");
+    if (fkOrder && fkOrder.split("_").length === 3 && fkOrder.split("_")[0] !== "0" && state.cfg.bot_url) {
+      location.replace(state.cfg.bot_url);
+      return;
+    }
+
     if (state.cfg.support_url) {
       const sLink = document.getElementById("support-link");
       sLink.href = state.cfg.support_url;
@@ -535,9 +601,7 @@ async function init() {
     renderOptions();
     loadTurnstile(state.cfg.turnstile_site_key);
 
-    const params = new URLSearchParams(location.search);
     let orderId = params.get("order");
-    const fkOrder = params.get("MERCHANT_ORDER_ID");
     if (!orderId && fkOrder) {
       const parts = fkOrder.split("_");
       if (parts.length === 3) orderId = parts[2];
