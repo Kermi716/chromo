@@ -76,6 +76,27 @@ function notify(text, kind = "info") {
   el.addEventListener("click", close);
 }
 
+function fireConfetti() {
+  if (typeof confetti !== "function") return;
+  const end = Date.now() + 700;
+  const frame = () => {
+    confetti({
+      particleCount: 4,
+      angle: 60,
+      spread: 55,
+      origin: { x: 0, y: 0.75 },
+    });
+    confetti({
+      particleCount: 4,
+      angle: 120,
+      spread: 55,
+      origin: { x: 1, y: 0.75 },
+    });
+    if (Date.now() < end) requestAnimationFrame(frame);
+  };
+  frame();
+}
+
 function bindCopy(btn, sourceEl) {
   btn.addEventListener("click", async () => {
     try {
@@ -380,6 +401,7 @@ function startPolling(orderId) {
         orderDl.href = data.download_url;
         orderActions.hidden = false;
         notify("Оплата подтверждена", "ok");
+        fireConfetti();
       }
     } catch (_) {}
   };
