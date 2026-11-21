@@ -44,6 +44,8 @@ const trialBox = document.getElementById("trial-box");
 const trialInfo = document.getElementById("trial-info");
 const trialKey = document.getElementById("trial-key");
 const trialDl = document.getElementById("trial-dl");
+const trialActions = trialBox.querySelector(".actions");
+const trialInstall = trialBox.querySelector(".install");
 const copyTrialKeyBtn = document.getElementById("copy-trial-key");
 
 const keyInput = document.getElementById("key-input");
@@ -52,6 +54,8 @@ const checkBtnDefaultText = checkBtn.textContent;
 const keyBox = document.getElementById("key-box");
 const keyInfo = document.getElementById("key-info");
 const keyDl = document.getElementById("key-dl");
+const keyActions = keyBox.querySelector(".actions");
+const keyInstall = keyBox.querySelector(".install");
 const toastsEl = document.getElementById("toasts");
 
 function notify(text, kind = "info") {
@@ -526,9 +530,11 @@ trialBtn.addEventListener("click", async () => {
     const text = expired ? "Ключ " + data.status : data.status;
     trialInfo.innerHTML = "<i class=\"fa-solid " + icon + "\"></i><span>" + text + "</span>";
     trialKey.textContent = data.key;
-    trialDl.href = data.download_url;
+    trialActions.hidden = expired || !data.download_url;
+    trialInstall.hidden = expired;
+    trialDl.href = expired ? "#" : (data.download_url || "#");
     trialBox.hidden = false;
-    notify(data.is_new ? "Пробный ключ выдан" : "Показан ранее выданный ключ", "ok");
+    notify(expired ? "Пробный ключ истек" : (data.is_new ? "Пробный ключ выдан" : "Показан ранее выданный ключ"), expired ? "err" : "ok");
   } catch (_) {
     resetWidget("trial");
     trialBtn.disabled = false;
@@ -590,9 +596,11 @@ checkBtn.addEventListener("click", async () => {
       ? "Ключ " + data.status
       : "Активен " + data.days_left + " дн. (" + data.status + ")";
     keyInfo.innerHTML = "<i class=\"fa-solid " + icon + "\"></i><span>" + text + "</span>";
-    keyDl.href = data.download_url;
+    keyActions.hidden = expired || !data.download_url;
+    keyInstall.hidden = expired;
+    keyDl.href = expired ? "#" : (data.download_url || "#");
     keyBox.hidden = false;
-    notify("Ключ подтвержден", "ok");
+    notify(expired ? "Срок действия ключа истек" : "Ключ подтвержден", expired ? "err" : "ok");
   } catch (_) {
     resetWidget("key");
     notify("Нет связи с сервером", "err");
