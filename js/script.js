@@ -21,6 +21,7 @@ const state = {
   trialWidget: null,
   keyWidget: null,
   poll: null,
+  order: null,
   checkTimer: null,
 };
 
@@ -52,8 +53,9 @@ const METHOD_ICONS = [
 ];
 
 const INSTALL_STEPS = [
-  "Закинь chromo.lua в папку moonloader.",
-  "Зайди в игру, открой меню и вставь ключ.",
+  "Поместите скачанный файл chromo.lua в папку moonloader.",
+  "Запустите игру и откройте меню.",
+  "Вставьте ключ в поле активации.",
 ];
 
 function notify(text, kind = "info") {
@@ -106,11 +108,39 @@ function h(tag, className, text) {
   return node;
 }
 
+function formatNow() {
+  return new Date().toLocaleString("ru-RU", {
+    day: "numeric",
+    month: "long",
+    year: "numeric",
+    hour: "2-digit",
+    minute: "2-digit",
+  });
+}
+
+function formatAmount(value) {
+  const n = Number(value);
+  if (!Number.isFinite(n) || n <= 0) return "";
+  return n.toLocaleString("ru-RU") + " ₽";
+}
+
+function formatPaidAt(value) {
+  const m = /^(\d{2}\.\d{2}\.\d{4}) (\d{2}:\d{2})/.exec(value || "");
+  return m ? m[1] + " " + m[2] + " МСК" : formatNow();
+}
+
+function receiptUrl(orderId) {
+  return location.origin + location.pathname + "?receipt=" + orderId;
+}
+
 function buildKey(key) {
+  const wrap = h("div", "key-wrap");
+  wrap.append(h("div", "field-label", "Ключ подписки"));
+
   const btn = h("button", "key");
   btn.type = "button";
   btn.title = "Копировать ключ";
-  key.split("-").forEach((part) => btn.append(h("span", "key-part", part)));
+  btn.append(h("span", "key-value", key));
 
   const icon = h("i", "fa-regular fa-copy");
   const copy = h("span", "key-copy");
@@ -132,30 +162,74 @@ function buildKey(key) {
       icon.className = "fa-regular fa-copy";
     }, 1500);
   });
-  return btn;
+
+  wrap.append(btn);
+  return wrap;
+}
+
+function buildInstruction() {
+  const toggle = h("button", "btn-sec");
+  toggle.type = "button";
+  toggle.setAttribute("aria-expanded", "false");
+  toggle.append(h("i", "fa-solid fa-circle-info"), document.createTextNode("Инструкция"));
+
+  const steps = h("ol", "steps");
+  steps.hidden = true;
+  INSTALL_STEPS.forEach((s) => steps.append(h("li", "", s)));
+
+  toggle.addEventListener("click", () => {
+    steps.hidden = !steps.hidden;
+    toggle.setAttribute("aria-expanded", String(!steps.hidden));
+  });
+  return [toggle, steps];
 }
 
 function buildResult(v) {
   const root = h("div", "result");
 
-  const status = h("div", "result-status " + (v.tone || ""));
-  status.append(h("i", v.icon), h("span", "", v.status));
-  root.append(status);
+  const head = h("div", "result-head");
+  const badge = h("div", "badge " + (v.tone || ""));
+  badge.append(h("i", v.icon));
+  head.append(badge, h("h2", "result-title", v.title));
+  if (v.sub) head.append(h("p", "result-sub", v.sub));
+  root.append(head);
 
-  if (v.hint) root.append(h("p", "result-hint", v.hint));
+  if (v.rows && v.rows.length) {
+    const list = h("dl", "rows");
+    v.rows.forEach(([label, value, mono]) => {
+      const row = h("div", "row");
+      row.append(h("dt", "", label), h("dd", mono ? "mono" : "", value));
+      list.append(row);
+    });
+    root.append(list);
+  }
+
   if (v.key) root.append(buildKey(v.key));
+
+  const actions = h("div", "result-actions");
 
   if (v.downloadUrl) {
     const dl = h("a", "btn");
     dl.href = v.downloadUrl;
-    dl.append(h("i", "fa-solid fa-download"), document.createTextNode("Скачать chromo.lua"));
-    root.append(dl);
+    dl.append(h("i", "fa-solid fa-download"), document.createTextNode("Скачать"));
+    actions.append(dl);
   }
 
-  if (v.install) {
-    const list = h("ol", "steps");
-    INSTALL_STEPS.forEach((s) => list.append(h("li", "", s)));
-    root.append(list);
+  if (v.install) actions.append(...buildInstruction());
+
+  if (v.receiptLink) {
+    const link = h("button", "btn-sec");
+    link.type = "button";
+    link.append(h("i", "fa-solid fa-link"), document.createTextNode("Ссылка на чек"));
+    link.addEventListener("click", async () => {
+      try {
+        await navigator.clipboard.writeText(v.receiptLink);
+        notify("Ссылка на чек скопирована", "ok");
+      } catch (_) {
+        notify("Не удалось скопировать", "err");
+      }
+    });
+    actions.append(link);
   }
 
   if (v.reopenUrl) {
@@ -164,8 +238,10 @@ function buildResult(v) {
     open.target = "_blank";
     open.rel = "noopener";
     open.append(h("i", "fa-solid fa-arrow-up-right-from-square"), document.createTextNode("Открыть страницу оплаты"));
-    root.append(open);
+    actions.append(open);
   }
+
+  if (actions.children.length) root.append(actions);
 
   const back = h("button", "back");
   back.type = "button";
@@ -467,10 +543,17 @@ function syncPayUi() {
 function startPolling(orderId, payUrl) {
   if (state.poll) clearInterval(state.poll);
 
+  const order = state.order && state.order.id === orderId ? state.order : null;
+  const orderRows = [["Заказ", orderId.toUpperCase(), true]];
+  if (order) {
+    orderRows.push(["Сумма", order.price + " ₽"], ["Способ оплаты", order.method]);
+  }
+
   showView(orderBox, buyForm, {
     icon: "fa-solid fa-spinner fa-spin",
-    status: "Ожидание оплаты",
-    hint: "Ключ появится здесь сразу после оплаты. Страницу можно не закрывать.",
+    title: "Ожидание оплаты",
+    sub: "Ключ появится здесь сразу после оплаты. Страницу можно не закрывать.",
+    rows: orderRows,
     reopenUrl: payUrl,
   });
 
@@ -482,13 +565,22 @@ function startPolling(orderId, payUrl) {
         clearInterval(state.poll);
         state.poll = null;
         switchTab("buy");
+        const paidRows = [["Заказ", orderId.toUpperCase(), true]];
+        const amount = formatAmount(data.amount) || (order ? order.price + " ₽" : "");
+        const method = data.provider_label || (order ? order.method : "");
+        if (amount) paidRows.push(["Сумма", amount]);
+        if (method) paidRows.push(["Способ оплаты", method]);
+        paidRows.push(["Срок", data.days + " дн."], ["Дата оплаты", formatPaidAt(data.paid_at)]);
         showView(orderBox, buyForm, {
           tone: "ok",
-          icon: "fa-solid fa-circle-check",
-          status: "Оплачено, " + data.days + " дн.",
+          icon: "fa-solid fa-check",
+          title: "Оплачено",
+          sub: "Подписка активирована",
+          rows: paidRows,
           key: data.key,
           downloadUrl: data.download_url,
           install: true,
+          receiptLink: receiptUrl(orderId),
           backLabel: "Новая оплата",
         });
         notify("Оплата подтверждена", "ok");
@@ -499,6 +591,38 @@ function startPolling(orderId, payUrl) {
 
   check();
   state.poll = setInterval(check, 4000);
+}
+
+async function showReceipt(orderId) {
+  try {
+    const res = await fetch(API + "/web/receipt/" + encodeURIComponent(orderId));
+    const data = await res.json();
+    if (!res.ok || !data.ok) {
+      notify(data.error || "Чек не найден", "err");
+      return;
+    }
+    const rows = [["Заказ", data.order_id.toUpperCase(), true]];
+    const amount = formatAmount(data.amount);
+    if (amount) rows.push(["Сумма", amount]);
+    if (data.provider_label) rows.push(["Способ оплаты", data.provider_label]);
+    rows.push(
+      ["Срок", data.days + " дн."],
+      ["Дата оплаты", formatPaidAt(data.paid_at)],
+      ["Ключ", data.key_masked, true],
+      ["Статус ключа", data.key_status]
+    );
+    showView(orderBox, buyForm, {
+      tone: "ok",
+      icon: "fa-solid fa-check",
+      title: "Чек об оплате",
+      sub: "Платёж подтверждён сервером",
+      rows,
+      receiptLink: receiptUrl(data.order_id),
+      backLabel: "На главную",
+    });
+  } catch (_) {
+    notify("Нет связи с сервером", "err");
+  }
 }
 
 function runCheckTimer(until) {
@@ -578,6 +702,7 @@ payBtn.addEventListener("click", async () => {
 
     payBtn.disabled = false;
     window.open(data.url, "_blank", "noopener");
+    state.order = { id: data.order_id, price: plan.price_rub, method: method.label };
     startPolling(data.order_id, data.url);
   } catch (_) {
     resetWidget("pay");
@@ -613,8 +738,9 @@ trialBtn.addEventListener("click", async () => {
     const expired = data.days_left <= 0;
     showView(trialBox, trialForm, {
       tone: expired ? "err" : "ok",
-      icon: expired ? "fa-solid fa-circle-xmark" : "fa-solid fa-circle-check",
-      status: expired ? "Ключ " + data.status : data.status,
+      icon: expired ? "fa-solid fa-xmark" : "fa-solid fa-check",
+      title: expired ? "Срок истёк" : "Ключ выдан",
+      rows: [["Статус", data.status], ["Осталось", Math.max(0, data.days_left) + " дн."]],
       key: data.key,
       downloadUrl: expired ? "" : data.download_url,
       install: !expired,
@@ -672,8 +798,9 @@ checkBtn.addEventListener("click", async () => {
     const expired = data.days_left <= 0;
     showView(keyBox, keyForm, {
       tone: expired ? "err" : "ok",
-      icon: expired ? "fa-solid fa-circle-xmark" : "fa-solid fa-circle-check",
-      status: expired ? "Ключ " + data.status : "Активен " + data.days_left + " дн. (" + data.status + ")",
+      icon: expired ? "fa-solid fa-xmark" : "fa-solid fa-check",
+      title: expired ? "Срок истёк" : "Ключ активен",
+      rows: [["Статус", data.status], ["Осталось", Math.max(0, data.days_left) + " дн."]],
       key,
       downloadUrl: expired ? "" : data.download_url,
       install: !expired,
@@ -721,6 +848,12 @@ async function init() {
     if (state.cfg.methods.length) state.method = state.cfg.methods[0].id;
     renderOptions();
     loadTurnstile(state.cfg.turnstile_site_key);
+
+    const receiptId = params.get("receipt");
+    if (receiptId && /^[0-9a-f]{16}$/.test(receiptId)) {
+      showReceipt(receiptId);
+      return;
+    }
 
     let orderId = params.get("order");
     if (!orderId && fkOrder) {
