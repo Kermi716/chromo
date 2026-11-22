@@ -274,41 +274,100 @@ i.method-icon {
 .result {
   display: flex;
   flex-direction: column;
-  gap: 14px;
+  gap: 24px;
+  padding-top: 8px;
 }
 
-.result-status {
+.result-head {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 6px;
+}
+
+.badge {
+  width: 60px;
+  height: 60px;
   display: flex;
   align-items: center;
-  gap: 10px;
-  font-size: 15px;
-  font-weight: 500;
-  color: #f4f4f5;
-}
-
-.result-status i {
-  font-size: 18px;
+  justify-content: center;
+  margin-bottom: 12px;
+  border-radius: 50%;
+  border: 1px solid #2a2a33;
+  background: #131317;
   color: #a1a1aa;
+  font-size: 24px;
 }
 
-.result-status.ok i {
+.badge.ok {
   color: #4ade80;
+  border-color: #23482f;
+  background: rgba(74, 222, 128, 0.07);
 }
 
-.result-status.err i {
+.badge.err {
   color: #ef4444;
+  border-color: #4d2626;
+  background: rgba(239, 68, 68, 0.07);
 }
 
-.result-hint {
+.result-title {
+  font-size: 20px;
+  font-weight: 500;
+  color: #ffffff;
+  letter-spacing: 0.01em;
+}
+
+.result-sub {
+  max-width: 300px;
+  font-size: 13px;
+  color: #71717a;
+}
+
+.rows {
+  border-top: 1px solid #1f1f24;
+}
+
+.row {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 13px 0;
+  border-bottom: 1px solid #1f1f24;
+  font-size: 13px;
+}
+
+.row dt {
+  flex-shrink: 0;
+  color: #71717a;
+}
+
+.row dd {
+  text-align: right;
+  color: #e4e4e7;
+  word-break: break-word;
+}
+
+.row dd.mono {
+  font-family: "Roboto Mono", Consolas, monospace;
+  font-size: 12px;
+  letter-spacing: 0.04em;
+}
+
+.field-label {
+  margin-bottom: 8px;
   font-size: 13px;
   color: #71717a;
 }
 
 .key {
   display: flex;
-  align-items: stretch;
+  align-items: center;
   width: 100%;
-  padding: 0;
+  height: 50px;
+  padding: 0 0 0 16px;
   background: #0d0d10;
   color: #ffffff;
   border: 1px solid #27272f;
@@ -322,22 +381,23 @@ i.method-icon {
   border-color: #3f3f4d;
 }
 
-.key-part {
+.key-value {
   flex: 1;
-  padding: 15px 0;
-  text-align: center;
+  text-align: left;
+  white-space: nowrap;
   font-family: "Roboto Mono", Consolas, monospace;
   font-size: 15px;
   font-weight: 500;
-  letter-spacing: 0.06em;
-  border-right: 1px solid #1f1f26;
+  letter-spacing: 0.08em;
 }
 
 .key-copy {
-  width: 44px;
+  align-self: stretch;
+  width: 48px;
   display: flex;
   align-items: center;
   justify-content: center;
+  border-left: 1px solid #1f1f26;
   background: #131318;
   color: #71717a;
   font-size: 14px;
@@ -350,6 +410,12 @@ i.method-icon {
 
 .key.done .key-copy {
   color: #4ade80;
+}
+
+.result-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
 }
 
 .btn-sec {
@@ -376,9 +442,12 @@ i.method-icon {
 }
 
 .steps {
-  padding-left: 18px;
+  padding: 14px 14px 14px 34px;
+  background: #0d0d10;
+  border: 1px solid #1f1f24;
+  border-radius: 7px;
   font-size: 13px;
-  line-height: 1.6;
+  line-height: 1.65;
   color: #a1a1aa;
 }
 
@@ -387,7 +456,7 @@ i.method-icon {
 }
 
 .back {
-  align-self: flex-start;
+  align-self: center;
   display: flex;
   align-items: center;
   gap: 6px;
@@ -465,9 +534,9 @@ i.method-icon {
     padding: 18px;
   }
 
-  .key-part {
+  .key-value {
     font-size: 13px;
-    letter-spacing: 0.02em;
+    letter-spacing: 0.04em;
   }
 
   .toasts {
