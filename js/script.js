@@ -52,6 +52,8 @@ const METHOD_ICONS = [
   { test: /free|фрикас|фри\s?кас|\bfk\b/i, src: "assets/frk.jpg" },
 ];
 
+const SEEN_ORDERS_KEY = "chromo_seen_orders";
+
 const INSTALL_STEPS = [
   "Поместите скачанный файл chromo.lua в папку moonloader.",
   "Запустите игру и откройте меню.",
@@ -116,6 +118,15 @@ function formatNow() {
     hour: "2-digit",
     minute: "2-digit",
   });
+}
+
+function isFirstPaidView(orderId) {
+  try {
+    const seen = JSON.parse(localStorage.getItem(SEEN_ORDERS_KEY) || "[]");
+    if (seen.includes(orderId)) return false;
+    localStorage.setItem(SEEN_ORDERS_KEY, JSON.stringify([...seen, orderId].slice(-50)));
+  } catch (_) {}
+  return true;
 }
 
 function formatAmount(value) {
@@ -583,8 +594,10 @@ function startPolling(orderId, payUrl) {
           receiptLink: receiptUrl(orderId),
           backLabel: "Новая оплата",
         });
-        notify("Оплата подтверждена", "ok");
-        fireConfetti();
+        if (isFirstPaidView(orderId)) {
+          notify("Оплата подтверждена", "ok");
+          fireConfetti();
+        }
       }
     } catch (_) {}
   };
