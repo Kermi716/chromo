@@ -11,9 +11,9 @@
   <link rel="manifest" href="favico/site.webmanifest">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&family=Roboto+Mono:wght@500&display=swap">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
-  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/style.css?v=8">
 </head>
 <body>
   <canvas class="bg" id="bg" aria-hidden="true"></canvas>
@@ -34,77 +34,49 @@
     <main class="main">
       <div class="panel">
         <div class="pane active" id="pane-buy">
-          <div class="group">
-            <div class="label"><i class="fa-solid fa-tag"></i>Тариф</div>
-            <div class="grid-2" id="plans"></div>
+          <div id="buy-form">
+            <div class="group">
+              <div class="label"><i class="fa-solid fa-tag"></i>Тариф</div>
+              <div class="grid-2" id="plans"></div>
+            </div>
+
+            <div class="group">
+              <div class="label"><i class="fa-solid fa-wallet"></i>Способ оплаты</div>
+              <div class="grid-2" id="methods"></div>
+            </div>
+
+            <div class="note" id="method-note" hidden></div>
+
+            <div class="cf-slot" id="cf-pay"></div>
+
+            <button class="btn" id="pay-btn" type="button" disabled>Оплатить</button>
           </div>
 
-          <div class="group">
-            <div class="label"><i class="fa-solid fa-wallet"></i>Способ оплаты</div>
-            <div class="grid-2" id="methods"></div>
-          </div>
-
-          <div class="note" id="method-note" hidden></div>
-
-          <div class="cf-slot" id="cf-pay"></div>
-
-          <button class="btn" id="pay-btn" type="button" disabled>Оплатить</button>
-
-          <div class="order" id="order-box" hidden>
-            <div class="order-head" id="order-head">
-              <i class="fa-solid fa-spinner fa-spin" id="order-icon"></i>
-              <span id="order-status">Ожидание оплаты</span>
-            </div>
-            <div class="key-row" id="order-key-row" hidden>
-              <span class="key-val" id="order-key"></span>
-              <button class="copy-btn" id="copy-key" type="button" title="Копировать">
-                <i class="fa-regular fa-copy"></i>
-              </button>
-            </div>
-            <div class="actions" id="order-actions" hidden>
-              <a class="btn-sec" id="order-dl" href="#"><i class="fa-solid fa-download"></i>Скачать chromo.lua</a>
-            </div>
-          </div>
+          <div id="order-box" hidden></div>
         </div>
 
         <div class="pane" id="pane-trial">
-
-          <div class="cf-slot" id="cf-trial"></div>
-
-          <button class="btn" id="trial-btn" type="button">Получить ключ</button>
-
-          <div class="order" id="trial-box" hidden>
-            <div class="order-head ok" id="trial-info"></div>
-            <div class="key-row">
-              <span class="key-val" id="trial-key"></span>
-              <button class="copy-btn" id="copy-trial-key" type="button" title="Копировать">
-                <i class="fa-regular fa-copy"></i>
-              </button>
-            </div>
-            <div class="actions">
-              <a class="btn-sec" id="trial-dl" href="#"><i class="fa-solid fa-download"></i>Скачать chromo.lua</a>
-            </div>
-            <div class="install">1. Закинь chromo.lua в папку moonloader.<br>2. Зайди в игру, открой меню и вставь ключ.</div>
+          <div id="trial-form">
+            <div class="cf-slot" id="cf-trial"></div>
+            <button class="btn" id="trial-btn" type="button">Получить ключ</button>
           </div>
+
+          <div id="trial-box" hidden></div>
         </div>
 
         <div class="pane" id="pane-key">
-          <div class="group">
-            <div class="label"><i class="fa-solid fa-key"></i>Ключ подписки</div>
-            <input class="input" id="key-input" type="text" placeholder="Введите ключ" maxlength="19" autocomplete="off" spellcheck="false">
-          </div>
-
-          <div class="cf-slot" id="cf-key"></div>
-
-          <button class="btn" id="check-btn" type="button">Проверить</button>
-
-          <div class="order" id="key-box" hidden>
-            <div class="order-head ok" id="key-info"></div>
-            <div class="actions">
-              <a class="btn-sec" id="key-dl" href="#"><i class="fa-solid fa-download"></i>Скачать chromo.lua</a>
+          <div id="key-form">
+            <div class="group">
+              <div class="label"><i class="fa-solid fa-key"></i>Ключ подписки</div>
+              <input class="input" id="key-input" type="text" placeholder="Введите ключ" maxlength="19" autocomplete="off" spellcheck="false">
             </div>
-            <div class="install">1. Закинь chromo.lua в папку moonloader.<br>2. Зайди в игру, открой меню и вставь ключ.</div>
+
+            <div class="cf-slot" id="cf-key"></div>
+
+            <button class="btn" id="check-btn" type="button">Проверить</button>
           </div>
+
+          <div id="key-box" hidden></div>
         </div>
       </div>
     </main>
@@ -112,6 +84,6 @@
 
   <div class="toasts" id="toasts"></div>
   <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.3/dist/confetti.browser.min.js"></script>
-  <script src="js/script.js?v=7"></script>
+  <script src="js/script.js?v=8"></script>
 </body>
 </html>

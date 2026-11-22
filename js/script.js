@@ -29,34 +29,32 @@ const plansEl = document.getElementById("plans");
 const methodsEl = document.getElementById("methods");
 const methodNote = document.getElementById("method-note");
 const payBtn = document.getElementById("pay-btn");
+const buyForm = document.getElementById("buy-form");
 const orderBox = document.getElementById("order-box");
-const orderHead = document.getElementById("order-head");
-const orderIcon = document.getElementById("order-icon");
-const orderStatus = document.getElementById("order-status");
-const orderKeyRow = document.getElementById("order-key-row");
-const orderKey = document.getElementById("order-key");
-const orderActions = document.getElementById("order-actions");
-const orderDl = document.getElementById("order-dl");
-const copyKeyBtn = document.getElementById("copy-key");
 
 const trialBtn = document.getElementById("trial-btn");
+const trialForm = document.getElementById("trial-form");
 const trialBox = document.getElementById("trial-box");
-const trialInfo = document.getElementById("trial-info");
-const trialKey = document.getElementById("trial-key");
-const trialDl = document.getElementById("trial-dl");
-const trialActions = trialBox.querySelector(".actions");
-const trialInstall = trialBox.querySelector(".install");
-const copyTrialKeyBtn = document.getElementById("copy-trial-key");
 
 const keyInput = document.getElementById("key-input");
 const checkBtn = document.getElementById("check-btn");
 const checkBtnDefaultText = checkBtn.textContent;
+const keyForm = document.getElementById("key-form");
 const keyBox = document.getElementById("key-box");
-const keyInfo = document.getElementById("key-info");
-const keyDl = document.getElementById("key-dl");
-const keyActions = keyBox.querySelector(".actions");
-const keyInstall = keyBox.querySelector(".install");
 const toastsEl = document.getElementById("toasts");
+
+const METHOD_ICONS = [
+  { test: /funpay|фанпей/i, src: "assets/fp.jpg" },
+  { test: /ukr|укр/i, src: "assets/ukr.png" },
+  { test: /crystal|кристал/i, src: "assets/crstlp.jpg" },
+  { test: /crypto|крипт/i, src: "assets/crptbt.jpg" },
+  { test: /free|фрикас|фри\s?кас|\bfk\b/i, src: "assets/frk.jpg" },
+];
+
+const INSTALL_STEPS = [
+  "Закинь chromo.lua в папку moonloader.",
+  "Зайди в игру, открой меню и вставь ключ.",
+];
 
 function notify(text, kind = "info") {
   if (!text) return;
@@ -101,20 +99,106 @@ function fireConfetti() {
   frame();
 }
 
-function bindCopy(btn, sourceEl) {
+function h(tag, className, text) {
+  const node = document.createElement(tag);
+  if (className) node.className = className;
+  if (text) node.textContent = text;
+  return node;
+}
+
+function buildKey(key) {
+  const btn = h("button", "key");
+  btn.type = "button";
+  btn.title = "Копировать ключ";
+  key.split("-").forEach((part) => btn.append(h("span", "key-part", part)));
+
+  const icon = h("i", "fa-regular fa-copy");
+  const copy = h("span", "key-copy");
+  copy.append(icon);
+  btn.append(copy);
+
   btn.addEventListener("click", async () => {
     try {
-      await navigator.clipboard.writeText(sourceEl.textContent);
-      const icon = btn.querySelector("i");
-      btn.classList.add("done");
-      icon.className = "fa-solid fa-check";
-      notify("Ключ скопирован", "ok");
-      setTimeout(() => {
-        btn.classList.remove("done");
-        icon.className = "fa-regular fa-copy";
-      }, 1500);
-    } catch (_) {}
+      await navigator.clipboard.writeText(key);
+    } catch (_) {
+      notify("Не удалось скопировать", "err");
+      return;
+    }
+    btn.classList.add("done");
+    icon.className = "fa-solid fa-check";
+    notify("Ключ скопирован", "ok");
+    setTimeout(() => {
+      btn.classList.remove("done");
+      icon.className = "fa-regular fa-copy";
+    }, 1500);
   });
+  return btn;
+}
+
+function buildResult(v) {
+  const root = h("div", "result");
+
+  const status = h("div", "result-status " + (v.tone || ""));
+  status.append(h("i", v.icon), h("span", "", v.status));
+  root.append(status);
+
+  if (v.hint) root.append(h("p", "result-hint", v.hint));
+  if (v.key) root.append(buildKey(v.key));
+
+  if (v.downloadUrl) {
+    const dl = h("a", "btn");
+    dl.href = v.downloadUrl;
+    dl.append(h("i", "fa-solid fa-download"), document.createTextNode("Скачать chromo.lua"));
+    root.append(dl);
+  }
+
+  if (v.install) {
+    const list = h("ol", "steps");
+    INSTALL_STEPS.forEach((s) => list.append(h("li", "", s)));
+    root.append(list);
+  }
+
+  if (v.reopenUrl) {
+    const open = h("a", "btn-sec");
+    open.href = v.reopenUrl;
+    open.target = "_blank";
+    open.rel = "noopener";
+    open.append(h("i", "fa-solid fa-arrow-up-right-from-square"), document.createTextNode("Открыть страницу оплаты"));
+    root.append(open);
+  }
+
+  const back = h("button", "back");
+  back.type = "button";
+  back.append(h("i", "fa-solid fa-arrow-left"), document.createTextNode(v.backLabel || "Назад"));
+  back.addEventListener("click", () => hideView(v.box, v.form));
+  root.append(back);
+
+  return root;
+}
+
+function showView(box, form, view) {
+  box.replaceChildren(buildResult({ ...view, box, form }));
+  box.hidden = false;
+  form.hidden = true;
+}
+
+function hideView(box, form) {
+  box.hidden = true;
+  box.replaceChildren();
+  form.hidden = false;
+}
+
+function methodIcon(m) {
+  const haystack = m.id + " " + m.label;
+  const found = METHOD_ICONS.find((x) => x.test.test(haystack));
+  const fallback = () => h("i", "fa-solid fa-credit-card method-icon");
+  if (!found) return fallback();
+
+  const img = h("img", "method-icon");
+  img.src = found.src;
+  img.alt = "";
+  img.addEventListener("error", () => img.replaceWith(fallback()));
+  return img;
 }
 
 function buildMask(word, cols, rows) {
@@ -338,8 +422,8 @@ function renderOptions() {
     const active = m.id === state.method;
     const btn = document.createElement("button");
     btn.type = "button";
-    btn.className = "item" + (active ? " active" : "");
-    btn.textContent = m.label;
+    btn.className = "item method" + (active ? " active" : "");
+    btn.append(methodIcon(m), h("span", "", m.label));
     btn.addEventListener("click", () => {
       state.method = m.id;
       renderOptions();
@@ -380,15 +464,15 @@ function syncPayUi() {
   }
 }
 
-function startPolling(orderId) {
+function startPolling(orderId, payUrl) {
   if (state.poll) clearInterval(state.poll);
 
-  orderBox.hidden = false;
-  orderHead.classList.remove("ok");
-  orderIcon.className = "fa-solid fa-spinner fa-spin";
-  orderStatus.textContent = "Ожидание оплаты";
-  orderKeyRow.hidden = true;
-  orderActions.hidden = true;
+  showView(orderBox, buyForm, {
+    icon: "fa-solid fa-spinner fa-spin",
+    status: "Ожидание оплаты",
+    hint: "Ключ появится здесь сразу после оплаты. Страницу можно не закрывать.",
+    reopenUrl: payUrl,
+  });
 
   const check = async () => {
     try {
@@ -397,13 +481,16 @@ function startPolling(orderId) {
       if (data.status === "paid") {
         clearInterval(state.poll);
         state.poll = null;
-        orderHead.classList.add("ok");
-        orderIcon.className = "fa-solid fa-circle-check";
-        orderStatus.textContent = "Оплачено " + data.days + " дн.";
-        orderKey.textContent = data.key;
-        orderKeyRow.hidden = false;
-        orderDl.href = data.download_url;
-        orderActions.hidden = false;
+        switchTab("buy");
+        showView(orderBox, buyForm, {
+          tone: "ok",
+          icon: "fa-solid fa-circle-check",
+          status: "Оплачено, " + data.days + " дн.",
+          key: data.key,
+          downloadUrl: data.download_url,
+          install: true,
+          backLabel: "Новая оплата",
+        });
         notify("Оплата подтверждена", "ok");
         fireConfetti();
       }
@@ -491,7 +578,7 @@ payBtn.addEventListener("click", async () => {
 
     payBtn.disabled = false;
     window.open(data.url, "_blank", "noopener");
-    startPolling(data.order_id);
+    startPolling(data.order_id, data.url);
   } catch (_) {
     resetWidget("pay");
     notify("Нет связи с сервером", "err");
@@ -524,16 +611,14 @@ trialBtn.addEventListener("click", async () => {
     }
 
     const expired = data.days_left <= 0;
-    trialInfo.classList.toggle("ok", !expired);
-    trialInfo.classList.toggle("err", expired);
-    const icon = expired ? "fa-circle-xmark" : "fa-circle-check";
-    const text = expired ? "Ключ " + data.status : data.status;
-    trialInfo.innerHTML = "<i class=\"fa-solid " + icon + "\"></i><span>" + text + "</span>";
-    trialKey.textContent = data.key;
-    trialActions.hidden = expired || !data.download_url;
-    trialInstall.hidden = expired;
-    trialDl.href = expired ? "#" : (data.download_url || "#");
-    trialBox.hidden = false;
+    showView(trialBox, trialForm, {
+      tone: expired ? "err" : "ok",
+      icon: expired ? "fa-solid fa-circle-xmark" : "fa-solid fa-circle-check",
+      status: expired ? "Ключ " + data.status : data.status,
+      key: data.key,
+      downloadUrl: expired ? "" : data.download_url,
+      install: !expired,
+    });
     notify(expired ? "Пробный ключ истек" : (data.is_new ? "Пробный ключ выдан" : "Показан ранее выданный ключ"), expired ? "err" : "ok");
   } catch (_) {
     resetWidget("trial");
@@ -541,9 +626,6 @@ trialBtn.addEventListener("click", async () => {
     notify("Нет связи с сервером", "err");
   }
 });
-
-bindCopy(copyKeyBtn, orderKey);
-bindCopy(copyTrialKeyBtn, trialKey);
 
 keyInput.addEventListener("input", () => {
   const raw = keyInput.value.toUpperCase().replace(/[^A-Z0-9]/g, "").slice(0, 16);
@@ -565,7 +647,6 @@ checkBtn.addEventListener("click", async () => {
   }
 
   checkBtn.disabled = true;
-  keyBox.hidden = true;
   notify("Проверка ключа...", "info");
 
   try {
@@ -589,17 +670,15 @@ checkBtn.addEventListener("click", async () => {
     }
 
     const expired = data.days_left <= 0;
-    keyInfo.classList.toggle("ok", !expired);
-    keyInfo.classList.toggle("err", expired);
-    const icon = expired ? "fa-circle-xmark" : "fa-circle-check";
-    const text = expired
-      ? "Ключ " + data.status
-      : "Активен " + data.days_left + " дн. (" + data.status + ")";
-    keyInfo.innerHTML = "<i class=\"fa-solid " + icon + "\"></i><span>" + text + "</span>";
-    keyActions.hidden = expired || !data.download_url;
-    keyInstall.hidden = expired;
-    keyDl.href = expired ? "#" : (data.download_url || "#");
-    keyBox.hidden = false;
+    showView(keyBox, keyForm, {
+      tone: expired ? "err" : "ok",
+      icon: expired ? "fa-solid fa-circle-xmark" : "fa-solid fa-circle-check",
+      status: expired ? "Ключ " + data.status : "Активен " + data.days_left + " дн. (" + data.status + ")",
+      key,
+      downloadUrl: expired ? "" : data.download_url,
+      install: !expired,
+      backLabel: "Проверить другой ключ",
+    });
     notify(expired ? "Срок действия ключа истек" : "Ключ подтвержден", expired ? "err" : "ok");
   } catch (_) {
     resetWidget("key");
