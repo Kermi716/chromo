@@ -178,6 +178,30 @@ function buildKey(key) {
   return wrap;
 }
 
+function buildReceiptButton(link) {
+  const btn = h("button", "btn-blue");
+  btn.type = "button";
+  const icon = h("i", "fa-solid fa-link");
+  const label = document.createTextNode("Скопировать ссылку на чек");
+  btn.append(icon, label);
+
+  btn.addEventListener("click", async () => {
+    try {
+      await navigator.clipboard.writeText(link);
+    } catch (_) {
+      notify("Не удалось скопировать", "err");
+      return;
+    }
+    icon.className = "fa-solid fa-check";
+    label.textContent = "Ссылка скопирована";
+    setTimeout(() => {
+      icon.className = "fa-solid fa-link";
+      label.textContent = "Скопировать ссылку на чек";
+    }, 1500);
+  });
+  return btn;
+}
+
 function buildInstruction() {
   const toggle = h("button", "btn-sec");
   toggle.type = "button";
@@ -226,22 +250,9 @@ function buildResult(v) {
     actions.append(dl);
   }
 
-  if (v.install) actions.append(...buildInstruction());
+  if (v.receiptLink) actions.append(buildReceiptButton(v.receiptLink));
 
-  if (v.receiptLink) {
-    const link = h("button", "btn-sec");
-    link.type = "button";
-    link.append(h("i", "fa-solid fa-link"), document.createTextNode("Ссылка на чек"));
-    link.addEventListener("click", async () => {
-      try {
-        await navigator.clipboard.writeText(v.receiptLink);
-        notify("Ссылка на чек скопирована", "ok");
-      } catch (_) {
-        notify("Не удалось скопировать", "err");
-      }
-    });
-    actions.append(link);
-  }
+  if (v.install) actions.append(...buildInstruction());
 
   if (v.reopenUrl) {
     const open = h("a", "btn-sec");
@@ -628,7 +639,6 @@ async function showReceipt(orderId) {
       tone: "ok",
       icon: "fa-solid fa-check",
       title: "Чек об оплате",
-      sub: "Платёж подтверждён сервером",
       rows,
       receiptLink: receiptUrl(data.order_id),
       backLabel: "На главную",
