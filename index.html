@@ -13,7 +13,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&family=Roboto+Mono:wght@500&display=swap">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
-  <link rel="stylesheet" href="css/style.css?v=8">
+  <link rel="stylesheet" href="css/style.css?v=10">
 </head>
 <body>
   <canvas class="bg" id="bg" aria-hidden="true"></canvas>
@@ -28,6 +28,7 @@
       <nav class="nav">
         <a id="bot-link" href="#" target="_blank" rel="noopener" hidden>Telegram бот</a>
         <a id="support-link" href="#" target="_blank" rel="noopener" hidden>Поддержка</a>
+        <button class="nav-link" type="button" data-offer>Оферта</button>
       </nav>
     </header>
 
@@ -48,6 +49,12 @@
             <div class="note" id="method-note" hidden></div>
 
             <div class="cf-slot" id="cf-pay"></div>
+
+            <label class="agree">
+              <input type="checkbox" id="offer-check">
+              <span class="agree-box"><i class="fa-solid fa-check"></i></span>
+              <span>Я согласен с <button class="text-link" type="button" data-offer>офертой</button></span>
+            </label>
 
             <button class="btn" id="pay-btn" type="button" disabled>Оплатить</button>
           </div>
@@ -82,8 +89,41 @@
     </main>
   </div>
 
+  <dialog class="offer" id="offer" aria-labelledby="offer-title">
+    <div class="offer-head">
+      <h2 id="offer-title">Оферта</h2>
+      <button class="offer-close" id="offer-close" type="button" aria-label="Закрыть"><i class="fa-solid fa-xmark"></i></button>
+    </div>
+    <div class="offer-body">
+      <section>
+        <h3>Оплата и возврат</h3>
+        <p>Все продажи финальны. После успешной выдачи ключа возврат средств не производится.</p>
+      </section>
+      <section>
+        <h3>Взлом и обход защиты</h3>
+        <p>Любые попытки кряка, деобфускации, реверс-инжиниринга, анализа трафика или обхода системы лицензирования ведут к моментальному и перманентному бану по HWID без возврата средств.</p>
+      </section>
+      <section>
+        <h3>Передача ключа третьим лицам</h3>
+        <p>Один ключ выдается строго на одного пользователя. Продажа, передача или совместное использование ключа запрещены. При нарушении ключ аннулируется, а устройство получает перманентный бан по HWID.</p>
+      </section>
+      <section>
+        <h3>Сброс HWID</h3>
+        <p>Для сброса привязки по HWID (например, при смене комплектующих или переустановке системы) необходимо написать в поддержку и предоставить чек об оплате либо другие весомые доказательства покупки.</p>
+      </section>
+      <section>
+        <h3>Бесплатные ключи</h3>
+        <p>Попытка повторно получить бесплатный ключ не карается баном, но работать он не будет: система автоматически отклонит активацию.</p>
+      </section>
+      <section>
+        <h3>Обновления</h3>
+        <p>На время выхода обновлений или технических работ действие ключей может быть временно заморожено.</p>
+      </section>
+    </div>
+  </dialog>
+
   <div class="toasts" id="toasts"></div>
   <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.3/dist/confetti.browser.min.js"></script>
-  <script src="js/script.js?v=8"></script>
+  <script src="js/script.js?v=10"></script>
 </body>
 </html>

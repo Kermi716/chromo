@@ -30,6 +30,7 @@ const plansEl = document.getElementById("plans");
 const methodsEl = document.getElementById("methods");
 const methodNote = document.getElementById("method-note");
 const payBtn = document.getElementById("pay-btn");
+const offerCheck = document.getElementById("offer-check");
 const buyForm = document.getElementById("buy-form");
 const orderBox = document.getElementById("order-box");
 
@@ -535,7 +536,7 @@ function syncPayUi() {
     return;
   }
 
-  payBtn.disabled = false;
+  payBtn.disabled = !offerCheck.checked;
   const cfSlot = document.getElementById("cf-pay");
 
   if (method.id === "funpay") {
@@ -674,10 +675,17 @@ function startCheckCooldown(sec) {
   runCheckTimer(until);
 }
 
+offerCheck.addEventListener("change", syncPayUi);
+
 payBtn.addEventListener("click", async () => {
   const plan = currentPlan();
   const method = currentMethod();
   if (!plan || !method) return;
+
+  if (!offerCheck.checked) {
+    notify("Примите условия оферты", "err");
+    return;
+  }
 
   if (method.id === "funpay") {
     if (plan.funpay_url) window.open(plan.funpay_url, "_blank", "noopener");
@@ -704,6 +712,7 @@ payBtn.addEventListener("click", async () => {
       body: JSON.stringify({
         plan: plan.id,
         method: method.id,
+        offer_accepted: true,
         cf_token: state.cfPay,
       }),
     });
@@ -716,7 +725,7 @@ payBtn.addEventListener("click", async () => {
       return;
     }
 
-    payBtn.disabled = false;
+    payBtn.disabled = !offerCheck.checked;
     window.open(data.url, "_blank", "noopener");
     state.order = { id: data.order_id, price: plan.price_rub, method: method.label };
     startPolling(data.order_id, data.url);
@@ -828,6 +837,16 @@ checkBtn.addEventListener("click", async () => {
     notify("Нет связи с сервером", "err");
     checkBtn.disabled = false;
   }
+});
+
+const offerDialog = document.getElementById("offer");
+
+document.querySelectorAll("[data-offer]").forEach((btn) => {
+  btn.addEventListener("click", () => offerDialog.showModal());
+});
+document.getElementById("offer-close").addEventListener("click", () => offerDialog.close());
+offerDialog.addEventListener("click", (e) => {
+  if (e.target === offerDialog) offerDialog.close();
 });
 
 async function init() {
