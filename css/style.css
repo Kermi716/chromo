@@ -513,10 +513,11 @@ i.method-icon {
 
 .agree {
   display: flex;
-  align-items: flex-start;
+  align-items: center;
   gap: 10px;
   margin-bottom: 12px;
   font-size: 13px;
+  line-height: 18px;
   color: #a1a1aa;
   cursor: pointer;
 }
@@ -531,7 +532,6 @@ i.method-icon {
   width: 18px;
   height: 18px;
   flex-shrink: 0;
-  margin-top: 1px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -548,9 +548,9 @@ i.method-icon {
 }
 
 .agree input:checked + .agree-box {
-  background: #f4f4f5;
-  border-color: #f4f4f5;
-  color: #09090b;
+  background: #2563eb;
+  border-color: #2563eb;
+  color: #ffffff;
 }
 
 .agree input:focus-visible + .agree-box {
