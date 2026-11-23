@@ -181,23 +181,15 @@ function buildKey(key) {
 function buildReceiptButton(link) {
   const btn = h("button", "btn-blue");
   btn.type = "button";
-  const icon = h("i", "fa-solid fa-link");
-  const label = document.createTextNode("Скопировать ссылку на чек");
-  btn.append(icon, label);
+  btn.append(h("i", "fa-solid fa-link"), document.createTextNode("Скопировать ссылку на чек"));
 
   btn.addEventListener("click", async () => {
     try {
       await navigator.clipboard.writeText(link);
+      notify("Ссылка на чек скопирована", "ok");
     } catch (_) {
       notify("Не удалось скопировать", "err");
-      return;
     }
-    icon.className = "fa-solid fa-check";
-    label.textContent = "Ссылка скопирована";
-    setTimeout(() => {
-      icon.className = "fa-solid fa-link";
-      label.textContent = "Скопировать ссылку на чек";
-    }, 1500);
   });
   return btn;
 }
@@ -281,6 +273,7 @@ function showView(box, form, view) {
 }
 
 function hideView(box, form) {
+  if (location.search) history.replaceState(null, "", location.pathname + location.hash);
   box.hidden = true;
   box.replaceChildren();
   form.hidden = false;
